@@ -1,46 +1,46 @@
 {
-  "name": "spectracker",
-  "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "type": "module",
-  "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "check-types": "turbo check-types",
-    "dev:native": "turbo -F native dev",
-    "dev:web": "turbo -F web dev",
-    "dev:server": "turbo -F server dev",
-    "db:push": "turbo -F @spectracker/db db:push",
-    "db:studio": "turbo -F @spectracker/db db:studio",
-    "db:generate": "turbo -F @spectracker/db db:generate",
-    "db:migrate": "turbo -F @spectracker/db db:migrate",
-    "db:local": "turbo -F @spectracker/db db:local",
-    "check": "oxlint && oxfmt --write",
-    "prepare": "husky"
-  },
-  "dependencies": {
-    "@spectracker/env": "workspace:*",
-    "dotenv": "catalog:",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@spectracker/config": "workspace:*",
-    "@types/bun": "catalog:",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
-    "oxfmt": "^0.26.0",
-    "oxlint": "^1.41.0",
-    "turbo": "^2.6.3",
-    "typescript": "catalog:"
-  },
-  "lint-staged": {
-    "*": [
-      "oxlint",
-      "oxfmt --write"
-    ]
-  },
-  "packageManager": "pnpm@10.29.3"
+	"name": "spectracker",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"type": "module",
+	"scripts": {
+		"dev": "turbo dev",
+		"build": "turbo build",
+		"check-types": "turbo check-types",
+		"dev:native": "turbo -F native dev",
+		"dev:web": "turbo -F web dev",
+		"dev:server": "turbo -F server dev",
+		"db:push": "turbo -F @spectracker/db db:push",
+		"db:studio": "turbo -F @spectracker/db db:studio",
+		"db:generate": "turbo -F @spectracker/db db:generate",
+		"db:migrate": "turbo -F @spectracker/db db:migrate",
+		"db:local": "turbo -F @spectracker/db db:local",
+		"check": "oxlint && oxfmt --write",
+		"prepare": "husky"
+	},
+	"dependencies": {
+		"@spectracker/env": "workspace:*",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@spectracker/config": "workspace:*",
+		"@types/bun": "catalog:",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.1.2",
+		"oxfmt": "^0.26.0",
+		"oxlint": "^1.41.0",
+		"turbo": "^2.6.3",
+		"typescript": "catalog:"
+	},
+	"lint-staged": {
+		"*": [
+			"oxlint",
+			"oxfmt --write"
+		]
+	},
+	"packageManager": "pnpm@10.29.3"
 }

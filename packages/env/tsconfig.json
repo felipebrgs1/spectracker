@@ -1,3 +1,3 @@
 {
-  "extends": "@spectracker/config/tsconfig.base.json"
+	"extends": "@spectracker/config/tsconfig.base.json"
 }

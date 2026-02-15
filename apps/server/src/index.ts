@@ -10,47 +10,47 @@ import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { Elysia } from "elysia";
 
 const rpcHandler = new RPCHandler(appRouter, {
-  interceptors: [
-    onError((error) => {
-      console.error(error);
-    }),
-  ],
+	interceptors: [
+		onError((error) => {
+			console.error(error);
+		}),
+	],
 });
 const apiHandler = new OpenAPIHandler(appRouter, {
-  plugins: [
-    new OpenAPIReferencePlugin({
-      schemaConverters: [new ZodToJsonSchemaConverter()],
-    }),
-  ],
-  interceptors: [
-    onError((error) => {
-      console.error(error);
-    }),
-  ],
+	plugins: [
+		new OpenAPIReferencePlugin({
+			schemaConverters: [new ZodToJsonSchemaConverter()],
+		}),
+	],
+	interceptors: [
+		onError((error) => {
+			console.error(error);
+		}),
+	],
 });
 
 const app = new Elysia()
-  .use(
-    cors({
-      origin: env.CORS_ORIGIN,
-      methods: ["GET", "POST", "OPTIONS"],
-    }),
-  )
-  .all("/rpc*", async (context) => {
-    const { response } = await rpcHandler.handle(context.request, {
-      prefix: "/rpc",
-      context: await createContext({ context }),
-    });
-    return response ?? new Response("Not Found", { status: 404 });
-  })
-  .all("/api*", async (context) => {
-    const { response } = await apiHandler.handle(context.request, {
-      prefix: "/api-reference",
-      context: await createContext({ context }),
-    });
-    return response ?? new Response("Not Found", { status: 404 });
-  })
-  .get("/", () => "OK")
-  .listen(3000, () => {
-    console.log("Server is running on http://localhost:3000");
-  });
+	.use(
+		cors({
+			origin: env.CORS_ORIGIN,
+			methods: ["GET", "POST", "OPTIONS"],
+		}),
+	)
+	.all("/rpc*", async (context) => {
+		const { response } = await rpcHandler.handle(context.request, {
+			prefix: "/rpc",
+			context: await createContext({ context }),
+		});
+		return response ?? new Response("Not Found", { status: 404 });
+	})
+	.all("/api*", async (context) => {
+		const { response } = await apiHandler.handle(context.request, {
+			prefix: "/api-reference",
+			context: await createContext({ context }),
+		});
+		return response ?? new Response("Not Found", { status: 404 });
+	})
+	.get("/", () => "OK")
+	.listen(3000, () => {
+		console.log("Server is running on http://localhost:3000");
+	});

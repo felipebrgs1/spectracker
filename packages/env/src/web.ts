@@ -8,8 +8,8 @@ import { z } from "zod";
  *   config.public.serverUrl (NUXT_PUBLIC_SERVER_URL maps to serverUrl)
  */
 export const env = createEnv({
-  client: {
-    NUXT_PUBLIC_SERVER_URL: z.url(),
-  },
-  emptyStringAsUndefined: true,
+	client: {
+		NUXT_PUBLIC_SERVER_URL: z.url(),
+	},
+	emptyStringAsUndefined: true,
 });
