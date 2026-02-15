@@ -11,18 +11,18 @@
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",
-    "@my-better-t-app/api": "workspace:*",
-    "@my-better-t-app/db": "workspace:*",
-    "@my-better-t-app/env": "workspace:*",
     "@orpc/openapi": "catalog:",
     "@orpc/server": "catalog:",
     "@orpc/zod": "catalog:",
+    "@spectracker/api": "workspace:*",
+    "@spectracker/db": "workspace:*",
+    "@spectracker/env": "workspace:*",
     "dotenv": "catalog:",
     "elysia": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@my-better-t-app/config": "workspace:*",
+    "@spectracker/config": "workspace:*",
     "@types/bun": "catalog:",
     "tsdown": "^0.16.5",
     "typescript": "catalog:"

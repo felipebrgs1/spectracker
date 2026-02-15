@@ -1,5 +1,5 @@
 {
-  "name": "@my-better-t-app/api",
+  "name": "@spectracker/api",
   "type": "module",
   "exports": {
     ".": {
@@ -11,17 +11,17 @@
   },
   "scripts": {},
   "dependencies": {
-    "@my-better-t-app/db": "workspace:*",
-    "@my-better-t-app/env": "workspace:*",
     "@orpc/client": "catalog:",
     "@orpc/openapi": "catalog:",
     "@orpc/server": "catalog:",
     "@orpc/zod": "catalog:",
+    "@spectracker/db": "workspace:*",
+    "@spectracker/env": "workspace:*",
     "dotenv": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@my-better-t-app/config": "workspace:*",
+    "@spectracker/config": "workspace:*",
     "elysia": "catalog:",
     "typescript": "catalog:"
   }

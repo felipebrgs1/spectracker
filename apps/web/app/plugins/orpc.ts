@@ -1,4 +1,4 @@
-import type { AppRouterClient } from "@my-better-t-app/api/routers/index";
+import type { AppRouterClient } from "@spectracker/api/routers/index";
 
 import { defineNuxtPlugin } from "#app";
 import { createORPCClient } from "@orpc/client";

@@ -11,14 +11,14 @@
   },
   "dependencies": {
     "@libsql/client": "catalog:",
-    "@my-better-t-app/api": "workspace:*",
-    "@my-better-t-app/env": "workspace:*",
     "@nuxt/content": "^3.7.1",
     "@nuxt/ui": "4.2.1",
     "@nuxtjs/mdc": "^0.17.4",
     "@orpc/client": "catalog:",
     "@orpc/server": "catalog:",
     "@orpc/tanstack-query": "^1.12.2",
+    "@spectracker/api": "workspace:*",
+    "@spectracker/env": "workspace:*",
     "@tanstack/vue-query": "^5.90.2",
     "@vue/devtools-api": "^8.0.5",
     "dotenv": "catalog:",
@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.57",
-    "@my-better-t-app/config": "workspace:*",
+    "@spectracker/config": "workspace:*",
     "@tanstack/vue-query-devtools": "^5.90.2",
     "tailwindcss": "^4.1.13",
     "typescript": "catalog:"

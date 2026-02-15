@@ -1,5 +1,5 @@
 {
-  "name": "my-better-t-app",
+  "name": "spectracker",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -13,21 +13,21 @@
     "dev:native": "turbo -F native dev",
     "dev:web": "turbo -F web dev",
     "dev:server": "turbo -F server dev",
-    "db:push": "turbo -F @my-better-t-app/db db:push",
-    "db:studio": "turbo -F @my-better-t-app/db db:studio",
-    "db:generate": "turbo -F @my-better-t-app/db db:generate",
-    "db:migrate": "turbo -F @my-better-t-app/db db:migrate",
-    "db:local": "turbo -F @my-better-t-app/db db:local",
+    "db:push": "turbo -F @spectracker/db db:push",
+    "db:studio": "turbo -F @spectracker/db db:studio",
+    "db:generate": "turbo -F @spectracker/db db:generate",
+    "db:migrate": "turbo -F @spectracker/db db:migrate",
+    "db:local": "turbo -F @spectracker/db db:local",
     "check": "oxlint && oxfmt --write",
     "prepare": "husky"
   },
   "dependencies": {
-    "@my-better-t-app/env": "workspace:*",
+    "@spectracker/env": "workspace:*",
     "dotenv": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@my-better-t-app/config": "workspace:*",
+    "@spectracker/config": "workspace:*",
     "@types/bun": "catalog:",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",

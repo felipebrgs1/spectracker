@@ -1,7 +1,7 @@
 import { cors } from "@elysiajs/cors";
-import { createContext } from "@my-better-t-app/api/context";
-import { appRouter } from "@my-better-t-app/api/routers/index";
-import { env } from "@my-better-t-app/env/server";
+import { createContext } from "@spectracker/api/context";
+import { appRouter } from "@spectracker/api/routers/index";
+import { env } from "@spectracker/env/server";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { onError } from "@orpc/server";

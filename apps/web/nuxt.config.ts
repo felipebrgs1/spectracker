@@ -1,4 +1,4 @@
-import "@my-better-t-app/env/web";
+import "@spectracker/env/web";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   modules: ["@nuxt/ui"],
   css: ["~/assets/css/main.css"],
   devServer: {
-    port: 3001,
+    port: 5173,
   },
   runtimeConfig: {
     public: {
