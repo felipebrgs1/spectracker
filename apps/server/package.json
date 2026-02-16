@@ -16,7 +16,6 @@
 		"@orpc/zod": "catalog:",
 		"@spectracker/api": "workspace:*",
 		"@spectracker/db": "workspace:*",
-		"@spectracker/env": "workspace:*",
 		"dotenv": "catalog:",
 		"elysia": "catalog:",
 		"zod": "catalog:"

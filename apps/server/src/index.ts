@@ -1,7 +1,6 @@
 import { cors } from "@elysiajs/cors";
 import { createContext } from "@spectracker/api/context";
 import { appRouter } from "@spectracker/api/routers/index";
-import { env } from "@spectracker/env/server";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { onError } from "@orpc/server";
@@ -32,7 +31,7 @@ const apiHandler = new OpenAPIHandler(appRouter, {
 const app = new Elysia()
 	.use(
 		cors({
-			origin: env.CORS_ORIGIN,
+			origin: process.env.CORS_ORIGIN || "http://localhost:5173",
 			methods: ["GET", "POST", "OPTIONS"],
 		}),
 	)

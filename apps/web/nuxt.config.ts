@@ -1,5 +1,4 @@
 import tailwindcss from "@tailwindcss/vite";
-import "@spectracker/env/web";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({

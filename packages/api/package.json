@@ -16,7 +16,6 @@
 		"@orpc/server": "catalog:",
 		"@orpc/zod": "catalog:",
 		"@spectracker/db": "workspace:*",
-		"@spectracker/env": "workspace:*",
 		"dotenv": "catalog:",
 		"zod": "catalog:"
 	},

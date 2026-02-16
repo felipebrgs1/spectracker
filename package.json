@@ -22,7 +22,6 @@
 		"prepare": "husky"
 	},
 	"dependencies": {
-		"@spectracker/env": "workspace:*",
 		"dotenv": "catalog:",
 		"zod": "catalog:"
 	},
