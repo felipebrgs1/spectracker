@@ -426,12 +426,12 @@ apps/web/server/
 
 ### Fase 0 — Migracao de Base (agora)
 
-- [ ] Remover `@nuxt/ui` e dependencias associadas
-- [ ] Instalar e configurar `shadcn-vue`
-- [ ] Configurar Tailwind CSS v4 limpo
-- [ ] Criar layout base (sidebar, header, footer)
-- [ ] Criar pagina de dashboard vazia com estrutura
-- [ ] Configurar tema/cores (dark mode, paleta)
+- [x] Remover `@nuxt/ui` e dependencias associadas
+- [x] Instalar e configurar `shadcn-vue`
+- [x] Configurar Tailwind CSS v4 limpo
+- [x] Criar layout base (sidebar, header, footer)
+- [x] Criar pagina de dashboard vazia com estrutura
+- [x] Configurar tema/cores (dark mode, paleta)
 - [ ] Mover chamadas API para Nuxt server routes
 - [ ] Remover plugin oRPC do frontend (manter oRPC apenas no server)
 
