@@ -218,7 +218,7 @@ function specIcon(label: string) {
 										rel="noreferrer noopener"
 										class="mt-2 inline-block"
 									>
-										<Button size="sm" variant="outline" class="bg-emerald-600!">Link do produto</Button>
+										<Button size="sm" class="bg-emerald-600! hover:bg-emerald-700!">Link do produto</Button>
 									</a>
 								</div>
 							</div>
