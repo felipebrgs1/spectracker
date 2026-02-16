@@ -1,4 +1,10 @@
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
+import dotenv from "dotenv";
 import tailwindcss from "@tailwindcss/vite";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: resolve(__dirname, "../../.env") });
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -16,10 +22,7 @@ export default defineNuxtConfig({
 		prefix: "",
 		componentDir: "./app/components/ui",
 	},
-	runtimeConfig: {
-		databaseUrl: "",
-		databaseAuthToken: "",
-	},
+	runtimeConfig: {},
 	vite: {
 		build: {
 			sourcemap: false,

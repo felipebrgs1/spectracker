@@ -1,7 +1,12 @@
+import { resolve } from "node:path";
+import dotenv from "dotenv";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "./schema/index";
+
+// Load environment variables from the monorepo root
+dotenv.config({ path: resolve(process.cwd(), "../../.env") });
 
 const databaseUrl = process.env.DATABASE_URL || process.env.NUXT_DATABASE_URL || "";
 const databaseAuthToken = process.env.DATABASE_AUTH_TOKEN || process.env.NUXT_DATABASE_AUTH_TOKEN;

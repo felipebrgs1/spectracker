@@ -1,3 +1,7 @@
+import { resolve } from "node:path";
+import dotenv from "dotenv";
+dotenv.config({ path: resolve(process.cwd(), "../../.env") });
+
 import { cors } from "@elysiajs/cors";
 import { createContext } from "@spectracker/api/context";
 import { appRouter } from "@spectracker/api/routers/index";
