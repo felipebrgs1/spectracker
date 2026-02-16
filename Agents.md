@@ -134,7 +134,15 @@ Do NOT create flat page files like `pages/build.vue`. Always use the folder patt
 - **Web env**: Nuxt uses `runtimeConfig` for server-side secrets (`NUXT_DATABASE_URL`, `NUXT_DATABASE_AUTH_TOKEN`). No public env vars needed.
 - Env files: `apps/server/.env` (Elysia), `apps/web/.env` (Nuxt).
 
-### 7. Code Style
+### 7. Contracts, Types, and Validation
+
+- All shared request/response and DTO typing must be centralized in `packages/contracts`.
+- `packages/contracts` is the single source of truth for runtime validation via **Zod** and inferred TypeScript types.
+- Do not create local `type` or `interface` declarations for API payloads inside `apps/*` or `packages/*` feature files.
+- Consumers (web pages, server routes, API modules) must import types from `@spectracker/contracts` and use `z.infer`-based exported types.
+- Server route responses should be validated with the corresponding schema from `@spectracker/contracts` before returning.
+
+### 8. Code Style
 
 - **Tabs** for indentation (not spaces).
 - **Semicolons** required.

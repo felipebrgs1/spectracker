@@ -1,0 +1,20 @@
+{
+	"name": "@spectracker/contracts",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		},
+		"./*": {
+			"default": "./src/*.ts"
+		}
+	},
+	"scripts": {},
+	"dependencies": {
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@spectracker/config": "workspace:*",
+		"typescript": "catalog:"
+	}
+}

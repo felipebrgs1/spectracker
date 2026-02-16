@@ -1,23 +1,34 @@
-import { categories, components, db } from "@spectracker/db";
-import { asc, count, eq } from "drizzle-orm";
+import { categoriesResponseSchema } from "@spectracker/contracts";
+import { categories, components, db, sourceOffers } from "@spectracker/db";
+import { asc, sql } from "drizzle-orm";
 
 export default defineEventHandler(async () => {
 	const rows = await db
 		.select({
 			name: categories.name,
 			slug: categories.slug,
-			componentCount: count(components.id),
+			componentCount: sql<number>`(
+				(
+					select count(*)
+					from ${components}
+					where ${components.categoryId} = ${categories.id}
+				) + (
+					select count(*)
+					from ${sourceOffers}
+					where ${sourceOffers.categoryId} = ${categories.id}
+				)
+			)`,
 		})
 		.from(categories)
-		.leftJoin(components, eq(components.categoryId, categories.id))
-		.groupBy(categories.id)
 		.orderBy(asc(categories.sortOrder));
 
-	return rows.map((row) => {
+	const response = rows.map((row) => {
 		return {
 			name: row.name,
 			slug: row.slug,
-			componentCount: Number(row.componentCount),
+			componentCount: row.componentCount,
 		};
 	});
+
+	return categoriesResponseSchema.parse(response);
 });

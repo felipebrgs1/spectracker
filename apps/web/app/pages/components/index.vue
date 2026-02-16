@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ComponentsResponse } from "@spectracker/contracts";
 import { Cpu, Search } from "lucide-vue-next";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -6,16 +7,6 @@ import { Button } from "~/components/ui/button";
 useHead({
 	title: "Components",
 });
-
-type ComponentsResponse = {
-	items: Array<{
-		id: string;
-		name: string;
-		category: string;
-		price: number;
-	}>;
-	total: number;
-};
 
 const { data } = await useFetch<ComponentsResponse>("/api/components");
 </script>

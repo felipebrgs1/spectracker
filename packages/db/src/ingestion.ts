@@ -35,6 +35,12 @@ export type SyncSummary = {
 };
 
 const KABUM_CPU_URL = "https://www.kabum.com.br/hardware/processadores";
+const TARGET_CPU_SOCKETS = [
+	{ label: "AM4", pattern: /\bam4\b/i },
+	{ label: "AM5", pattern: /\bam5\b/i },
+	{ label: "LGA 1700", pattern: /\blga[\s-]?1700\b/i },
+	{ label: "LGA 1851", pattern: /\blga[\s-]?1851\b/i },
+] as const;
 
 function normalizeWhitespace(value: string): string {
 	return value.replace(/\s+/g, " ").trim();
@@ -42,6 +48,15 @@ function normalizeWhitespace(value: string): string {
 
 function normalizeSearchText(value: string): string {
 	return normalizeWhitespace(value).toLowerCase();
+}
+
+function detectTargetCpuSocket(title: string): string | null {
+	for (const socket of TARGET_CPU_SOCKETS) {
+		if (socket.pattern.test(title)) {
+			return socket.label;
+		}
+	}
+	return null;
 }
 
 function hashString(value: string): string {
@@ -202,6 +217,111 @@ function getFirstString(values: unknown[]): string | undefined {
 	return undefined;
 }
 
+function parseKabumProductsFromNextData(html: string): RawOffer[] {
+	const nextDataMatch = html.match(
+		/<script id=["']__NEXT_DATA__["'] type=["']application\/json["']>([\s\S]*?)<\/script>/i,
+	);
+	if (!nextDataMatch?.[1]) {
+		return [];
+	}
+
+	const nextData = safeJsonParse(nextDataMatch[1]);
+	if (!isObject(nextData)) {
+		return [];
+	}
+
+	const pageProps = nextData.props;
+	if (!isObject(pageProps) || !isObject(pageProps.pageProps)) {
+		return [];
+	}
+
+	const innerDataRaw = pageProps.pageProps.data;
+	if (typeof innerDataRaw !== "string") {
+		return [];
+	}
+
+	const innerData = safeJsonParse(innerDataRaw);
+	if (!isObject(innerData) || !isObject(innerData.catalogServer)) {
+		return [];
+	}
+
+	const products = innerData.catalogServer.data;
+	if (!Array.isArray(products)) {
+		return [];
+	}
+
+	const offers: RawOffer[] = [];
+	for (const product of products) {
+		if (!isObject(product)) {
+			continue;
+		}
+
+		const title = getFirstString([product.name]);
+		if (!title) {
+			continue;
+		}
+
+		const socket = detectTargetCpuSocket(title);
+		if (!socket) {
+			continue;
+		}
+
+		const sellerName = getFirstString([product.sellerName]);
+		if (sellerName && !/kabum/i.test(sellerName)) {
+			continue;
+		}
+
+		const code = getFirstString([product.code ? String(product.code) : undefined]);
+		const slug = getFirstString([product.friendlyName]);
+		const url = getFirstString([
+			product.externalUrl,
+			code && slug ? `https://www.kabum.com.br/produto/${code}/${slug}` : undefined,
+		]);
+		const rawPrice = getFirstString([
+			typeof product.priceWithDiscount === "number"
+				? String(product.priceWithDiscount)
+				: product.priceWithDiscount,
+			typeof product.price === "number" ? String(product.price) : product.price,
+		]);
+		const priceCents = parsePriceToCents(rawPrice);
+		if (!url || priceCents === null) {
+			continue;
+		}
+
+		const imageUrl = getFirstString([
+			product.image,
+			product.thumbnail,
+			Array.isArray(product.images) ? product.images[0] : undefined,
+		]);
+		const inStock =
+			typeof product.available === "boolean"
+				? product.available
+				: typeof product.quantity === "number"
+					? product.quantity > 0
+					: undefined;
+
+		offers.push({
+			store: "kabum",
+			categorySlug: "cpu",
+			title,
+			url,
+			priceCents,
+			currency: "BRL",
+			externalId: code || extractKabumProductId(url),
+			imageUrl,
+			inStock,
+			stockText: inStock === undefined ? undefined : inStock ? "InStock" : "OutOfStock",
+			meta: {
+				source: "next-data",
+				socket,
+				seller: sellerName || null,
+			},
+		});
+	}
+
+	return offers;
+}
+
 function productNodeToOffer(productNode: JsonObject): RawOffer | null {
 	const offersNode = toArray(productNode.offers).find((entry) => isObject(entry));
 	const imageValue = productNode.image;
@@ -226,6 +346,11 @@ function productNodeToOffer(productNode: JsonObject): RawOffer | null {
 		return null;
 	}
 
+	const socket = detectTargetCpuSocket(title);
+	if (!socket) {
+		return null;
+	}
+
 	const availability = getFirstString([
 		offersNode && isObject(offersNode) ? offersNode.availability : undefined,
 	]);
@@ -245,6 +370,7 @@ function productNodeToOffer(productNode: JsonObject): RawOffer | null {
 		stockText: availability,
 		meta: {
 			source: "json-ld",
+			socket,
 		},
 	};
 }
@@ -263,6 +389,7 @@ async function fetchKabumCpuOffers(): Promise<RawOffer[]> {
 	}
 
 	const html = await response.text();
+	const offersFromNextData = parseKabumProductsFromNextData(html);
 	const jsonLdNodes = collectJsonLdScripts(html);
 	const products: JsonObject[] = [];
 	for (const node of jsonLdNodes) {
@@ -276,6 +403,10 @@ async function fetchKabumCpuOffers(): Promise<RawOffer[]> {
 			continue;
 		}
 		deduplicated.set(parsed.url, parsed);
+	}
+
+	for (const offer of offersFromNextData) {
+		deduplicated.set(offer.url, offer);
 	}
 
 	return Array.from(deduplicated.values());
@@ -298,7 +429,6 @@ export async function syncCpuOffersFromKabum(): Promise<SyncSummary> {
 		.limit(1);
 
 	if (!cpuCategory) {
-		const now = new Date().toISOString();
 		await db.insert(categories).values({
 			id: "cat-cpu",
 			name: "CPU",

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CategoriesResponse } from "@spectracker/contracts";
 import {
 	Cpu,
 	HardDrive,
@@ -18,12 +19,6 @@ import { Badge } from "~/components/ui/badge";
 useHead({
 	title: "Dashboard",
 });
-
-type CategoryItem = {
-	name: string;
-	slug: string;
-	componentCount: number;
-};
 
 type DashboardOverview = {
 	stats: {
@@ -56,7 +51,7 @@ const colorBySlug = {
 } as const;
 
 const { data: overview } = await useFetch<DashboardOverview>("/api/dashboard/overview");
-const { data: categoriesResponse } = await useFetch<CategoryItem[]>("/api/categories");
+const { data: categoriesResponse } = await useFetch<CategoriesResponse>("/api/categories");
 
 const categories = computed(() => {
 	return (categoriesResponse.value ?? []).map((category) => {
@@ -142,30 +137,33 @@ const stats = computed(() => {
 				</div>
 			</div>
 			<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-				<Card
+				<NuxtLink
 					v-for="category in categories"
 					:key="category.slug"
-					class="group cursor-pointer transition-all hover:shadow-md hover:border-primary/30"
+					:to="`/components/${category.slug}`"
+					class="block"
 				>
-					<CardContent class="flex items-center gap-4 p-4">
-						<div
-							class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted transition-colors group-hover:bg-primary/10"
-						>
-							<component
-								:is="category.icon"
-								class="size-5 transition-colors"
-								:class="category.color"
+					<Card class="group cursor-pointer transition-all hover:shadow-md hover:border-primary/30">
+						<CardContent class="flex items-center gap-4 p-4">
+							<div
+								class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted transition-colors group-hover:bg-primary/10"
+							>
+								<component
+									:is="category.icon"
+									class="size-5 transition-colors"
+									:class="category.color"
+								/>
+							</div>
+							<div class="min-w-0 flex-1">
+								<p class="text-sm font-medium">{{ category.name }}</p>
+								<p class="text-xs text-muted-foreground">{{ category.componentCount }} items</p>
+							</div>
+							<ArrowRight
+								class="size-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5"
 							/>
-						</div>
-						<div class="min-w-0 flex-1">
-							<p class="text-sm font-medium">{{ category.name }}</p>
-							<p class="text-xs text-muted-foreground">{{ category.componentCount }} items</p>
-						</div>
-						<ArrowRight
-							class="size-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5"
-						/>
-					</CardContent>
-				</Card>
+						</CardContent>
+					</Card>
+				</NuxtLink>
 			</div>
 		</div>
 
