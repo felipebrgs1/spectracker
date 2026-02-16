@@ -1,11 +1,15 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 
-import * as schema from "./schema";
+import * as schema from "./schema/index.ts";
+
+const databaseUrl = process.env.DATABASE_URL || process.env.NUXT_DATABASE_URL || "";
+const databaseAuthToken = process.env.DATABASE_AUTH_TOKEN || process.env.NUXT_DATABASE_AUTH_TOKEN;
 
 const client = createClient({
-	url: process.env.DATABASE_URL || "",
-	authToken: process.env.DATABASE_AUTH_TOKEN,
+	url: databaseUrl,
+	authToken: databaseAuthToken,
 });
 
 export const db = drizzle({ client, schema });
+export * from "./schema/index.ts";

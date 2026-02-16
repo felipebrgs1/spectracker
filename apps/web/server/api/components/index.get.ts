@@ -1,15 +1,34 @@
-type ComponentItem = {
-	id: string;
-	name: string;
-	category: string;
-	price: number;
-};
+import { categories, components, db } from "@spectracker/db";
+import { asc, eq } from "drizzle-orm";
 
-const components: ComponentItem[] = [];
+export default defineEventHandler(async (event) => {
+	const query = getQuery(event);
+	const categorySlug = typeof query.category === "string" ? query.category : undefined;
 
-export default defineEventHandler(() => {
+	const baseQuery = db
+		.select({
+			id: components.id,
+			name: components.name,
+			category: categories.slug,
+			price: components.price,
+		})
+		.from(components)
+		.innerJoin(categories, eq(components.categoryId, categories.id))
+		.orderBy(asc(components.name));
+
+	const rows = categorySlug
+		? await baseQuery.where(eq(categories.slug, categorySlug))
+		: await baseQuery;
+
 	return {
-		items: components,
-		total: components.length,
+		items: rows.map((row) => {
+			return {
+				id: row.id,
+				name: row.name,
+				category: row.category,
+				price: row.price ?? 0,
+			};
+		}),
+		total: rows.length,
 	};
 });

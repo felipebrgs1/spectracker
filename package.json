@@ -14,6 +14,7 @@
 		"dev:web": "turbo -F web dev",
 		"dev:server": "turbo -F server dev",
 		"db:push": "turbo -F @spectracker/db db:push",
+		"db:seed": "turbo -F @spectracker/db db:seed",
 		"db:studio": "turbo -F @spectracker/db db:studio",
 		"db:generate": "turbo -F @spectracker/db db:generate",
 		"db:migrate": "turbo -F @spectracker/db db:migrate",

@@ -437,13 +437,13 @@ apps/web/server/
 
 ### Fase 1 — Schema e Seed
 
-- [ ] Criar tabelas no Drizzle (`categories`, `components`, `component_specs`)
-- [ ] Criar tabelas de builds (`builds`, `build_items`)
-- [ ] Criar tabela `compatibility_rules`
-- [ ] Seed: inserir categorias base (CPU, GPU, Mobo, etc.)
-- [ ] Seed: inserir componentes de exemplo (10-20 por categoria)
-- [ ] Seed: inserir regras de compatibilidade basicas
-- [ ] Migrar banco com `drizzle-kit push`
+- [x] Criar tabelas no Drizzle (`categories`, `components`, `component_specs`)
+- [x] Criar tabelas de builds (`builds`, `build_items`)
+- [x] Criar tabela `compatibility_rules`
+- [x] Seed: inserir categorias base (CPU, GPU, Mobo, etc.)
+- [x] Seed: inserir componentes de exemplo (10-20 por categoria)
+- [x] Seed: inserir regras de compatibilidade basicas
+- [x] Migrar banco com `drizzle-kit push`
 
 ### Fase 2 — Dashboard
 
