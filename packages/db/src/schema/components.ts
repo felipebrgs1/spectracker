@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { categories } from "./categories.ts";
+import { categories } from "./categories";
 
 export const components = sqliteTable("components", {
 	id: text("id").primaryKey(),

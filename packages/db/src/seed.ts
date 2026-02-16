@@ -5,11 +5,14 @@ import { drizzle } from "drizzle-orm/libsql";
 import {
 	buildItems,
 	builds,
-	categories,
-	compatibilityRules,
-	componentSpecs,
-	components,
-} from "./schema/index.ts";
+} from "./schema/builds.ts";
+import { categories } from "./schema/categories.ts";
+import { compatibilityRules } from "./schema/compatibility-rules.ts";
+import { componentSpecs, components } from "./schema/components.ts";
+import {
+	priceHistory,
+	sourceOffers,
+} from "./schema/ingestion.ts";
 
 dotenv.config({
 	path: "../../apps/server/.env",
@@ -829,6 +832,8 @@ const ruleRows = [
 ];
 
 async function seed() {
+	await db.delete(priceHistory);
+	await db.delete(sourceOffers);
 	await db.delete(buildItems);
 	await db.delete(builds);
 	await db.delete(componentSpecs);

@@ -1,6 +1,6 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 
-import { categories } from "./categories.ts";
+import { categories } from "./categories";
 
 export const compatibilityRules = sqliteTable("compatibility_rules", {
 	id: text("id").primaryKey(),

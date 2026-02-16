@@ -13,7 +13,6 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **Bun** - Runtime environment
 - **Drizzle** - TypeScript-first ORM
 - **SQLite/Turso** - Database engine
-- **Husky** - Git hooks for code quality
 - **Oxlint** - Oxlint + Oxfmt (linting & formatting)
 - **Turborepo** - Optimized monorepo build system
 
@@ -52,9 +51,8 @@ pnpm run dev
 Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
 The API is running at [http://localhost:3000](http://localhost:3000).
 
-## Git Hooks and Formatting
+## Formatting
 
-- Initialize hooks: `pnpm run prepare`
 - Format and lint fix: `pnpm run check`
 
 ## Project Structure

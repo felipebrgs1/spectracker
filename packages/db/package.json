@@ -15,7 +15,7 @@
 		"db:generate": "drizzle-kit generate",
 		"db:studio": "drizzle-kit studio",
 		"db:migrate": "drizzle-kit migrate",
-		"db:seed": "node --experimental-strip-types src/seed.ts"
+		"db:seed": "node --experimental-strip-types --experimental-specifier-resolution=node src/seed.ts"
 	},
 	"dependencies": {
 		"@libsql/client": "catalog:",

@@ -21,7 +21,7 @@ SpecTracker is a PCPartPicker-style web app for building PC configurations with 
 | Monorepo      | **Turborepo** + **pnpm workspaces**                     |
 | Runtime       | **Bun** (server app) / **Node** (Nuxt)                  |
 | Linting       | **oxlint** + **oxfmt** (not ESLint/Prettier)            |
-| Git Hooks     | **Husky** + **lint-staged**                             |
+| Git Hooks     | None                                                    |
 
 ## Architecture
 
