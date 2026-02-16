@@ -432,8 +432,8 @@ apps/web/server/
 - [x] Criar layout base (sidebar, header, footer)
 - [x] Criar pagina de dashboard vazia com estrutura
 - [x] Configurar tema/cores (dark mode, paleta)
-- [ ] Mover chamadas API para Nuxt server routes
-- [ ] Remover plugin oRPC do frontend (manter oRPC apenas no server)
+- [x] Mover chamadas API para Nuxt server routes
+- [x] Remover plugin oRPC do frontend (manter oRPC apenas no server)
 
 ### Fase 1 — Schema e Seed
 

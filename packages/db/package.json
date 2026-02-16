@@ -26,7 +26,7 @@
 	},
 	"devDependencies": {
 		"@spectracker/config": "workspace:*",
-		"drizzle-kit": "^0.31.8",
+		"drizzle-kit": "^0.31.9",
 		"typescript": "catalog:"
 	}
 }

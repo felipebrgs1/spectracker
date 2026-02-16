@@ -10,46 +10,89 @@ import {
 	Fan,
 	Plus,
 	ArrowRight,
-	TrendingUp,
 } from "lucide-vue-next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
-import { Skeleton } from "~/components/ui/skeleton";
 
 useHead({
 	title: "Dashboard",
 });
 
-const categories = [
-	{ name: "CPU", slug: "cpu", icon: Cpu, count: 0, color: "text-blue-500" },
-	{ name: "GPU", slug: "gpu", icon: Monitor, count: 0, color: "text-green-500" },
-	{
-		name: "Motherboard",
-		slug: "motherboard",
-		icon: CircuitBoard,
-		count: 0,
-		color: "text-purple-500",
-	},
-	{ name: "RAM", slug: "ram", icon: MemoryStick, count: 0, color: "text-amber-500" },
-	{ name: "Storage", slug: "storage", icon: HardDrive, count: 0, color: "text-rose-500" },
-	{ name: "PSU", slug: "psu", icon: Zap, count: 0, color: "text-yellow-500" },
-	{ name: "Case", slug: "case", icon: Box, count: 0, color: "text-cyan-500" },
-	{ name: "Cooler", slug: "cooler", icon: Fan, count: 0, color: "text-teal-500" },
-];
+type CategoryItem = {
+	name: string;
+	slug: string;
+	componentCount: number;
+};
 
-const stats = [
-	{ label: "Components", value: "0", description: "in database", icon: Cpu },
-	{ label: "Builds", value: "0", description: "created", icon: Box },
-	{ label: "Categories", value: "8", description: "available", icon: CircuitBoard },
-];
+type DashboardOverview = {
+	stats: {
+		components: number;
+		builds: number;
+		categories: number;
+	};
+};
+
+const iconBySlug = {
+	cpu: Cpu,
+	gpu: Monitor,
+	motherboard: CircuitBoard,
+	ram: MemoryStick,
+	storage: HardDrive,
+	psu: Zap,
+	case: Box,
+	cooler: Fan,
+} as const;
+
+const colorBySlug = {
+	cpu: "text-blue-500",
+	gpu: "text-green-500",
+	motherboard: "text-purple-500",
+	ram: "text-amber-500",
+	storage: "text-rose-500",
+	psu: "text-yellow-500",
+	case: "text-cyan-500",
+	cooler: "text-teal-500",
+} as const;
+
+const { data: overview } = await useFetch<DashboardOverview>("/api/dashboard/overview");
+const { data: categoriesResponse } = await useFetch<CategoryItem[]>("/api/categories");
+
+const categories = computed(() => {
+	return (categoriesResponse.value ?? []).map((category) => {
+		return {
+			...category,
+			icon: iconBySlug[category.slug as keyof typeof iconBySlug] ?? Cpu,
+			color: colorBySlug[category.slug as keyof typeof colorBySlug] ?? "text-muted-foreground",
+		};
+	});
+});
+
+const stats = computed(() => {
+	const value = overview.value?.stats;
+	return [
+		{
+			label: "Components",
+			value: String(value?.components ?? 0),
+			description: "in database",
+			icon: Cpu,
+		},
+		{ label: "Builds", value: String(value?.builds ?? 0), description: "created", icon: Box },
+		{
+			label: "Categories",
+			value: String(value?.categories ?? categories.value.length),
+			description: "available",
+			icon: CircuitBoard,
+		},
+	];
+});
 </script>
 
 <template>
 	<div class="space-y-8">
 		<!-- Hero section -->
 		<div
-			class="relative overflow-hidden rounded-2xl border bg-gradient-to-br from-primary/5 via-background to-primary/10 p-8 md:p-12"
+			class="relative overflow-hidden rounded-2xl border bg-linear-to-br from-primary/5 via-background to-primary/10 p-8 md:p-12"
 		>
 			<div class="absolute -right-20 -top-20 size-64 rounded-full bg-primary/10 blur-3xl" />
 			<div class="absolute -bottom-20 -left-20 size-64 rounded-full bg-primary/5 blur-3xl" />
@@ -116,7 +159,7 @@ const stats = [
 						</div>
 						<div class="min-w-0 flex-1">
 							<p class="text-sm font-medium">{{ category.name }}</p>
-							<p class="text-xs text-muted-foreground">{{ category.count }} items</p>
+							<p class="text-xs text-muted-foreground">{{ category.componentCount }} items</p>
 						</div>
 						<ArrowRight
 							class="size-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-0.5"

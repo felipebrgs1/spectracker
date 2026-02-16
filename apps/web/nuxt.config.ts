@@ -22,6 +22,9 @@ export default defineNuxtConfig({
 		databaseAuthToken: "",
 	},
 	vite: {
+		build: {
+			sourcemap: false,
+		},
 		plugins: [tailwindcss() as any],
 	},
 });

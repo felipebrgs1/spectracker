@@ -30,10 +30,10 @@
 		"@spectracker/config": "workspace:*",
 		"@types/bun": "catalog:",
 		"husky": "^9.1.7",
-		"lint-staged": "^16.1.2",
-		"oxfmt": "^0.26.0",
-		"oxlint": "^1.41.0",
-		"turbo": "^2.6.3",
+		"lint-staged": "^16.2.7",
+		"oxfmt": "^0.32.0",
+		"oxlint": "^1.47.0",
+		"turbo": "^2.8.9",
 		"typescript": "catalog:"
 	},
 	"lint-staged": {

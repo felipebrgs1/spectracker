@@ -6,6 +6,18 @@ import { Button } from "~/components/ui/button";
 useHead({
 	title: "Components",
 });
+
+type ComponentsResponse = {
+	items: Array<{
+		id: string;
+		name: string;
+		category: string;
+		price: number;
+	}>;
+	total: number;
+};
+
+const { data } = await useFetch<ComponentsResponse>("/api/components");
 </script>
 
 <template>
@@ -22,7 +34,8 @@ useHead({
 				</div>
 				<h3 class="mt-4 font-medium">No Components Yet</h3>
 				<p class="mt-1 max-w-sm text-center text-sm text-muted-foreground">
-					Components will appear here once the database is seeded with hardware data.
+					Found {{ data?.total ?? 0 }} components. This list will populate once the database is
+					seeded with hardware data.
 				</p>
 				<Button class="mt-6 gap-2" variant="outline" disabled>
 					<Search class="size-4" />
