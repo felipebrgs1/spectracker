@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import type { ComponentsResponse } from "@spectracker/contracts";
-import { Cpu, Search } from "lucide-vue-next";
+import { Cpu } from "lucide-vue-next";
 import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
 
 useHead({
 	title: "Components",
 });
 
 const { data } = await useFetch<ComponentsResponse>("/api/components");
+
+function formatPrice(priceInCents: number): string {
+	return new Intl.NumberFormat("pt-BR", {
+		style: "currency",
+		currency: "BRL",
+	}).format((priceInCents ?? 0) / 100);
+}
 </script>
 
 <template>
@@ -18,7 +24,7 @@ const { data } = await useFetch<ComponentsResponse>("/api/components");
 			<p class="text-muted-foreground">Browse all PC components in the database.</p>
 		</div>
 
-		<Card class="border-dashed">
+		<Card v-if="(data?.items?.length ?? 0) === 0" class="border-dashed">
 			<CardContent class="flex flex-col items-center justify-center py-16">
 				<div class="flex size-14 items-center justify-center rounded-full bg-muted">
 					<Cpu class="size-7 text-muted-foreground" />
@@ -28,11 +34,27 @@ const { data } = await useFetch<ComponentsResponse>("/api/components");
 					Found {{ data?.total ?? 0 }} components. This list will populate once the database is
 					seeded with hardware data.
 				</p>
-				<Button class="mt-6 gap-2" variant="outline" disabled>
-					<Search class="size-4" />
-					Browse Components
-				</Button>
 			</CardContent>
 		</Card>
+
+		<div v-else class="grid gap-3">
+			<NuxtLink
+				v-for="item in data?.items"
+				:key="item.id"
+				:to="`/components/${item.category}/${item.id}`"
+				class="rounded-lg border p-4 transition-colors hover:bg-muted/40"
+			>
+				<div class="flex items-start justify-between gap-4">
+					<div>
+						<p class="font-medium leading-snug">{{ item.name }}</p>
+						<p class="mt-1 text-xs text-muted-foreground">
+							{{ item.store ? item.store.toUpperCase() : "catalog" }}
+							<span v-if="item.inStock === false">• out of stock</span>
+						</p>
+					</div>
+					<p class="shrink-0 font-semibold">{{ formatPrice(item.price) }}</p>
+				</div>
+			</NuxtLink>
+		</div>
 	</div>
 </template>

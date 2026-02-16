@@ -1,6 +1,6 @@
 import { componentsResponseSchema } from "@spectracker/contracts";
 import { categories, components, db, sourceOffers } from "@spectracker/db";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, or, sql } from "drizzle-orm";
 
 export default defineEventHandler(async (event) => {
 	const query = getQuery(event);
@@ -12,13 +12,16 @@ export default defineEventHandler(async (event) => {
 			name: components.name,
 			category: categories.slug,
 			price: components.price,
-			store: null as string | null,
-			url: null as string | null,
+			store: sql<string | null>`null`,
+			url: sql<string | null>`null`,
 			inStock: true,
 			imageUrl: components.imageUrl,
 		})
 		.from(components)
-		.innerJoin(categories, eq(components.categoryId, categories.id))
+		.innerJoin(
+			categories,
+			or(eq(components.categoryId, categories.id), eq(components.categoryId, categories.slug)),
+		)
 		.orderBy(asc(components.name));
 
 	const offerQuery = db
@@ -33,7 +36,10 @@ export default defineEventHandler(async (event) => {
 			imageUrl: sourceOffers.imageUrl,
 		})
 		.from(sourceOffers)
-		.innerJoin(categories, eq(sourceOffers.categoryId, categories.id))
+		.innerJoin(
+			categories,
+			or(eq(sourceOffers.categoryId, categories.id), eq(sourceOffers.categoryId, categories.slug)),
+		)
 		.orderBy(asc(sourceOffers.title));
 
 	const componentRows = categorySlug
