@@ -14,8 +14,7 @@
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:studio": "drizzle-kit studio",
-		"db:migrate": "drizzle-kit migrate",
-		"db:seed": "node --experimental-strip-types --experimental-specifier-resolution=node src/seed.ts"
+		"db:migrate": "drizzle-kit migrate"
 	},
 	"dependencies": {
 		"@libsql/client": "catalog:",

@@ -90,6 +90,7 @@ export default defineEventHandler(async () => {
 - shadcn config is in `apps/web/components.json` (style: new-york, base color: zinc).
 - Import path alias: `@/components/ui/<component>` or `~/components/ui/<component>`.
 - The `cn()` utility is at `@/lib/utils`.
+- **Pure Usage**: Use shadcn components in their pure form. Change their format/layout with custom classes only in specific cases. Prefer using built-in **variants** (e.g., `variant="outline"`) over ad-hoc utility classes.
 
 ### 3. Page Structure
 
