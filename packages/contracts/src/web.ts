@@ -17,6 +17,10 @@ export const componentItemSchema = z.object({
 	url: z.string().nullable().optional(),
 	inStock: z.boolean().optional(),
 	imageUrl: z.string().nullable().optional(),
+	brand: z.string().nullable().optional(),
+	model: z.string().nullable().optional(),
+	socket: z.string().nullable().optional(),
+	specs: z.record(z.string(), z.string()).optional(),
 });
 
 export const componentsResponseSchema = z.object({
