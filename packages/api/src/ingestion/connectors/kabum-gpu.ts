@@ -1,13 +1,7 @@
 import type { RawOffer } from "../types";
 import { extractKabumProductId, parsePriceToCents } from "../utils";
 
-const KABUM_CPU_URL = "https://www.kabum.com.br/hardware/processadores";
-const TARGET_CPU_SOCKETS = [
-	{ label: "AM4", pattern: /\bam4\b/i },
-	{ label: "AM5", pattern: /\bam5\b/i },
-	{ label: "LGA 1700", pattern: /\blga[\s-]?1700\b/i },
-	{ label: "LGA 1851", pattern: /\blga[\s-]?1851\b/i },
-] as const;
+const KABUM_GPU_URL = "https://www.kabum.com.br/hardware/placa-de-video-vga";
 
 type JsonObject = Record<string, unknown>;
 
@@ -36,12 +30,35 @@ function parseInteger(value: unknown): number | null {
 	return null;
 }
 
-function detectTargetCpuSocket(title: string): string | null {
-	for (const socket of TARGET_CPU_SOCKETS) {
-		if (socket.pattern.test(title)) {
-			return socket.label;
+function matchTargetGpu(title: string): Record<string, unknown> | null {
+	const normalized = title.toLowerCase();
+	const nvidiaMatch = normalized.match(/\brtx[\s-]?([345]\d{3})\b/i);
+	if (nvidiaMatch?.[1]) {
+		const chip = nvidiaMatch[1];
+		const seriesDigit = chip.charAt(0);
+		return {
+			vendor: "NVIDIA",
+			line: "RTX",
+			chip,
+			series: `${seriesDigit}000`,
+		};
+	}
+
+	const amdMatch = normalized.match(/\brx[\s-]?([6-9]\d{3})\b/i);
+	if (amdMatch?.[1]) {
+		const chip = amdMatch[1];
+		const seriesDigit = chip.charAt(0);
+		const seriesNumber = Number.parseInt(seriesDigit, 10);
+		if (Number.isFinite(seriesNumber) && seriesNumber >= 6) {
+			return {
+				vendor: "AMD",
+				line: "RX",
+				chip,
+				series: `${seriesDigit}000`,
+			};
 		}
 	}
+
 	return null;
 }
 
@@ -211,8 +228,8 @@ function parseKabumProductsFromNextData(html: string): ParsedKabumPage {
 			continue;
 		}
 
-		const socket = detectTargetCpuSocket(title);
-		if (!socket) {
+		const targetMeta = matchTargetGpu(title);
+		if (!targetMeta) {
 			continue;
 		}
 
@@ -252,7 +269,7 @@ function parseKabumProductsFromNextData(html: string): ParsedKabumPage {
 
 		offers.push({
 			store: "kabum",
-			categorySlug: "cpu",
+			categorySlug: "gpu",
 			title,
 			url,
 			priceCents,
@@ -263,8 +280,8 @@ function parseKabumProductsFromNextData(html: string): ParsedKabumPage {
 			stockText: inStock === undefined ? undefined : inStock ? "InStock" : "OutOfStock",
 			meta: {
 				source: "next-data",
-				socket,
 				seller: sellerName || null,
+				...targetMeta,
 			},
 		});
 	}
@@ -306,8 +323,8 @@ function productNodeToOffer(productNode: JsonObject): RawOffer | null {
 		return null;
 	}
 
-	const socket = detectTargetCpuSocket(title);
-	if (!socket) {
+	const targetMeta = matchTargetGpu(title);
+	if (!targetMeta) {
 		return null;
 	}
 
@@ -319,7 +336,7 @@ function productNodeToOffer(productNode: JsonObject): RawOffer | null {
 
 	return {
 		store: "kabum",
-		categorySlug: "cpu",
+		categorySlug: "gpu",
 		title,
 		url,
 		priceCents,
@@ -330,12 +347,12 @@ function productNodeToOffer(productNode: JsonObject): RawOffer | null {
 		stockText: availability,
 		meta: {
 			source: "json-ld",
-			socket,
+			...targetMeta,
 		},
 	};
 }
 
-export async function fetchKabumCpuOffers(): Promise<RawOffer[]> {
+export async function fetchKabumGpuOffers(): Promise<RawOffer[]> {
 	const deduplicated = new Map<string, RawOffer>();
 	const maxPagesRaw = Number.parseInt(process.env.INGESTION_KABUM_MAX_PAGES || "", 10);
 	const maxPages =
@@ -345,7 +362,7 @@ export async function fetchKabumCpuOffers(): Promise<RawOffer[]> {
 	let discoveredTotalPages: number | null = null;
 
 	while (currentPage <= maxPages && (discoveredTotalPages === null || currentPage <= discoveredTotalPages)) {
-		const pageUrl = new URL(KABUM_CPU_URL);
+		const pageUrl = new URL(KABUM_GPU_URL);
 		pageUrl.searchParams.set("page_number", String(currentPage));
 
 		const response = await fetch(pageUrl.toString(), {
@@ -358,7 +375,7 @@ export async function fetchKabumCpuOffers(): Promise<RawOffer[]> {
 
 		if (!response.ok) {
 			if (currentPage === 1) {
-				throw new Error(`Kabum connector failed with status ${response.status}.`);
+				throw new Error(`Kabum GPU connector failed with status ${response.status}.`);
 			}
 			break;
 		}

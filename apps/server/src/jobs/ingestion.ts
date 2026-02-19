@@ -1,4 +1,4 @@
-import { syncCpuOffersFromKabum } from "@spectracker/db/ingestion";
+import { syncCoreComponentOffersFromKabum } from "@spectracker/db/ingestion";
 
 const DEFAULT_INTERVAL_MINUTES = 120;
 
@@ -20,10 +20,10 @@ export function startIngestionScheduler() {
 
 	const runSync = async () => {
 		try {
-			const result = await syncCpuOffersFromKabum();
-			console.log("[ingestion] cpu/kabum sync completed", result);
+			const result = await syncCoreComponentOffersFromKabum();
+			console.log("[ingestion] core/kabum sync completed", result);
 		} catch (error) {
-			console.error("[ingestion] cpu/kabum sync failed", error);
+			console.error("[ingestion] core/kabum sync failed", error);
 		}
 	};
 

@@ -18,7 +18,8 @@
 		"db:generate": "turbo -F @spectracker/db db:generate",
 		"db:migrate": "turbo -F @spectracker/db db:migrate",
 		"db:local": "turbo -F @spectracker/db db:local",
-		"check": "oxlint && oxfmt --write"
+		"check": "oxlint && oxfmt --write",
+		"scrape:all": "node ./scripts/scrape-all.mjs"
 	},
 	"dependencies": {
 		"dotenv": "catalog:",

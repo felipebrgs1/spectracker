@@ -5,7 +5,12 @@ dotenv.config({ path: resolve(process.cwd(), "../../.env") });
 import { cors } from "@elysiajs/cors";
 import { createContext } from "@spectracker/api/context";
 import { appRouter } from "@spectracker/api/routers/index";
-import { syncCpuOffersFromKabum } from "@spectracker/db/ingestion";
+import {
+	syncCoreComponentOffersFromKabum,
+	syncCpuOffersFromKabum,
+	syncGpuOffersFromKabum,
+	syncRamOffersFromKabum,
+} from "@spectracker/db/ingestion";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { onError } from "@orpc/server";
@@ -68,6 +73,57 @@ new Elysia()
 		}
 
 		const result = await syncCpuOffersFromKabum();
+		return new Response(JSON.stringify(result), {
+			status: 200,
+			headers: {
+				"content-type": "application/json",
+			},
+		});
+	})
+	.post("/internal/ingestion/gpu/kabum", async (context) => {
+		const configuredToken = process.env.INGESTION_TOKEN;
+		if (configuredToken) {
+			const providedToken = context.request.headers.get("x-ingestion-token");
+			if (providedToken !== configuredToken) {
+				return new Response("Unauthorized", { status: 401 });
+			}
+		}
+
+		const result = await syncGpuOffersFromKabum();
+		return new Response(JSON.stringify(result), {
+			status: 200,
+			headers: {
+				"content-type": "application/json",
+			},
+		});
+	})
+	.post("/internal/ingestion/ram/kabum", async (context) => {
+		const configuredToken = process.env.INGESTION_TOKEN;
+		if (configuredToken) {
+			const providedToken = context.request.headers.get("x-ingestion-token");
+			if (providedToken !== configuredToken) {
+				return new Response("Unauthorized", { status: 401 });
+			}
+		}
+
+		const result = await syncRamOffersFromKabum();
+		return new Response(JSON.stringify(result), {
+			status: 200,
+			headers: {
+				"content-type": "application/json",
+			},
+		});
+	})
+	.post("/internal/ingestion/core/kabum", async (context) => {
+		const configuredToken = process.env.INGESTION_TOKEN;
+		if (configuredToken) {
+			const providedToken = context.request.headers.get("x-ingestion-token");
+			if (providedToken !== configuredToken) {
+				return new Response("Unauthorized", { status: 401 });
+			}
+		}
+
+		const result = await syncCoreComponentOffersFromKabum();
 		return new Response(JSON.stringify(result), {
 			status: 200,
 			headers: {
