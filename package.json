@@ -19,7 +19,9 @@
 		"db:migrate": "turbo -F @spectracker/db db:migrate",
 		"db:local": "turbo -F @spectracker/db db:local",
 		"check": "oxlint && oxfmt --write",
-		"scrape:all": "node ./scripts/scrape-all.mjs"
+		"scrape:all": "node ./scripts/scrape-all.mjs",
+		"clear:specs": "pnpm --filter @spectracker/db exec node ./scripts/clear-techpowerup-gpu-specs-queue.mjs",
+		"scrape:gpu-specs": "pnpm --filter @spectracker/db exec node ./scripts/scrape-techpowerup-gpu-specs.mjs"
 	},
 	"dependencies": {
 		"dotenv": "catalog:",

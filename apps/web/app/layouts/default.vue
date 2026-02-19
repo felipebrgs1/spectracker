@@ -16,6 +16,7 @@ const navItems = [
 	{ label: "Dashboard", to: "/", icon: "layout-dashboard" },
 	{ label: "Builder", to: "/build", icon: "wrench" },
 	{ label: "Components", to: "/components", icon: "cpu" },
+	{ label: "GPU Specs", to: "/gpu-specs", icon: "database" },
 ];
 
 watch(
