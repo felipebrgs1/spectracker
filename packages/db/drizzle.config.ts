@@ -13,9 +13,5 @@ for (let index = 2; index < process.argv.length; index += 1) {
 export default defineConfig({
 	schema: "./src/schema",
 	out: "./src/migrations",
-	dialect: "turso",
-	dbCredentials: {
-		url: args.get("--database-url") || "",
-		authToken: args.get("--auth-token"),
-	},
+	dialect: "sqlite",
 });

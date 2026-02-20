@@ -5,10 +5,10 @@
 	"scripts": {
 		"build": "tsdown",
 		"check-types": "tsc -b",
-		"dev": "wrangler dev -c ../../wrangler.toml",
-		"preview": "wrangler dev -c ../../wrangler.toml",
-		"start": "wrangler dev -c ../../wrangler.toml",
-		"deploy": "wrangler deploy -c ../../wrangler.toml"
+		"dev": "wrangler dev",
+		"preview": "wrangler dev",
+		"start": "wrangler dev",
+		"deploy": "wrangler deploy"
 	},
 	"dependencies": {
 		"@spectracker/contracts": "workspace:*",

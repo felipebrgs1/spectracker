@@ -1,5 +1,5 @@
 name = "spectracker-api"
-main = "./apps/server/src/index.ts"
+main = "./src/index.ts"
 compatibility_date = "2026-02-20"
 workers_dev = true
 
@@ -7,3 +7,4 @@ workers_dev = true
 binding = "DB"
 database_name = "specdev"
 database_id = "522f179c-df17-400e-91fe-6c29191a97b4"
+migrations_dir = "../../packages/db/src/migrations"

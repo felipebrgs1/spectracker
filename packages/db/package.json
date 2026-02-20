@@ -10,11 +10,12 @@
 		}
 	},
 	"scripts": {
-		"db:local": "turso dev --db-file local.db",
-		"db:push": "drizzle-kit push",
+		"db:local": "echo 'Run: pnpm run dev:server'",
+		"db:push": "drizzle-kit generate && pnpm -F server exec wrangler d1 migrations apply specdev --local",
 		"db:generate": "drizzle-kit generate",
-		"db:studio": "drizzle-kit studio",
-		"db:migrate": "drizzle-kit migrate"
+		"db:studio": "echo 'To use Drizzle Studio, use: drizzle-kit studio --dialect sqlite --url ../../apps/server/.wrangler/state/v3/d1/miniflare-D1DatabaseObject/*.sqlite'",
+		"db:migrate": "drizzle-kit generate && pnpm -F server exec wrangler d1 migrations apply specdev --local",
+		"db:migrate:remote": "drizzle-kit generate && pnpm -F server exec wrangler d1 migrations apply specdev --remote"
 	},
 	"dependencies": {
 		"@libsql/client": "catalog:",
