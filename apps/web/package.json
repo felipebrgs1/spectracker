@@ -8,8 +8,8 @@
 		"dev:cf": "nuxt dev",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
-		"preview:cf": "nuxt build && npx wrangler --cwd .output dev",
-		"deploy:cf": "nuxt build && npx wrangler --cwd .output deploy",
+		"preview:cf": "nuxt build && npx wrangler pages dev .output/public",
+		"deploy:cf": "nuxt build",
 		"start": "node .output/server/index.mjs",
 		"postinstall": "nuxt prepare"
 	},
