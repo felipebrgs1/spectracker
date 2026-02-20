@@ -15,7 +15,7 @@ SpecTracker is a PCPartPicker-style web app for building PC configurations with 
 | Dark Mode     | **@nuxtjs/color-mode** (class-based, `classSuffix: ""`) |
 | API Pattern   | **Nuxt Server Routes** (API is hidden, never exposed)   |
 | ORM           | **Drizzle ORM** (`drizzle-orm` + `drizzle-kit`)         |
-| Database      | **Turso** (libSQL) via `@libsql/client`                 |
+| Database      | **Cloudflare D1** (SQLite) via `drizzle-orm/d1`         |
 | Validation    | **Zod v4**                                              |
 | Server (ext)  | **Elysia** + **oRPC** (standalone API, optional/public) |
 | Monorepo      | **Turborepo** + **pnpm workspaces**                     |
@@ -59,26 +59,27 @@ spectracker/
 
 ## Critical Rules
 
-### 1. API Must Be Hidden
+### 1. API Consumption & Separation of Concerns
 
-The frontend (Nuxt) **never** calls external APIs directly from the browser. All data fetching goes through **Nuxt server routes** (`apps/web/server/api/`).
+The frontend (`apps/web`) MUST consume the backend API (`apps/server`) for all data operations. The Nuxt application **never** connects to the database directly and **must not** use Drizzle ORM.
 
 ```
-Browser → Nuxt Server Route → @spectracker/db → Turso
+Browser/Nuxt → Nuxt Server Route → apps/server (Elysia API) → @spectracker/db → Cloudflare D1
 ```
 
-- Use `$fetch('/api/...')` or `useFetch('/api/...')` in pages/components.
-- Server routes import from `@spectracker/db` directly.
-- The `apps/server` (Elysia) is a **separate** public API and should NOT be used by the Nuxt frontend.
-- Database credentials live in `runtimeConfig` (server-only), never in `public`.
+- Pages and components use `$fetch('/api/...')` or `useFetch('/api/...')` to hit Nuxt Server Routes.
+- Nuxt Server Routes (`apps/web/server/api/`) then **proxy** or fetch these requests to the `apps/server` (Elysia API).
+- Nuxt Server Routes act as a BFF (Backend for Frontend) ONLY. They hide the real Elysia API URL from the browser.
+- **Never** import `@spectracker/db`, `drizzle-orm`, or use any database utilities inside `apps/web`.
+- The `apps/server` is the central API and the ONLY application that possesses database bindings and interacts with the database.
 
-Example server route:
+Example Nuxt server route (Proxy):
 
 ```ts
 // apps/web/server/api/components/index.get.ts
-export default defineEventHandler(async () => {
-	const { db } = useDatabase();
-	return db.select().from(components).all();
+export default defineEventHandler(async (event) => {
+	const config = useRuntimeConfig(event);
+	return $fetch(`${config.apiUrl}/catalog/components`);
 });
 ```
 
@@ -120,7 +121,7 @@ Do NOT create flat page files like `pages/build.vue`. Always use the folder patt
 - Font: **Inter** (loaded via Google Fonts in `app.vue`).
 - Monospace: **JetBrains Mono** (for prices, specs, code).
 
-### 5. Database (Drizzle + Turso)
+### 5. Database (Drizzle + Cloudflare D1)
 
 - Schemas live in `packages/db/src/schema/`.
 - Use `text()` for IDs (nanoid/cuid2, not UUID).
@@ -131,7 +132,7 @@ Do NOT create flat page files like `pages/build.vue`. Always use the folder patt
 ### 6. Env Variables
 
 - **Server env** (`packages/env/src/server.ts`): validated with Zod via `@t3-oss/env-core`. Used by `apps/server` and `packages/db`.
-- **Web env**: Nuxt uses `runtimeConfig` for server-side secrets (`NUXT_DATABASE_URL`, `NUXT_DATABASE_AUTH_TOKEN`). No public env vars needed.
+- **Web env**: Nuxt uses Cloudflare D1 bindings configured in `wrangler.toml` (`DB`). No public env vars needed.
 - Env files: `apps/server/.env` (Elysia), `apps/web/.env` (Nuxt).
 
 ### 7. Code Style

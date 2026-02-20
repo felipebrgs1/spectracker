@@ -18,6 +18,8 @@ export default defineNuxtConfig({
 	},
 	runtimeConfig: {
 		apiUrl: process.env.NUXT_API_URL || "https://spectracker-api.felipeborgacogame.workers.dev",
+		databaseUrl: process.env.NUXT_DATABASE_URL || "",
+		databaseAuthToken: process.env.NUXT_DATABASE_AUTH_TOKEN || "",
 	},
 	nitro: {
 		preset: "cloudflare-pages",

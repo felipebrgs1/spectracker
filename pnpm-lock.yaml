@@ -106,6 +106,9 @@ importers:
       '@spectracker/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@spectracker/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@vueuse/core':
         specifier: ^14.2.1
         version: 14.2.1(vue@3.5.28(typescript@5.9.3))
