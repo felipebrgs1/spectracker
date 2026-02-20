@@ -1,17 +1,9 @@
 name = "spectracker"
 compatibility_date = "2026-02-20"
-pages_build_output_dir = ".output/public"
+pages_build_output_dir = "dist"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "specdev"
 database_id = "522f179c-df17-400e-91fe-6c29191a97b4"
 migrations_dir = "../../packages/db/src/migrations"
-
-[observability.logs]
-enabled = true
-head_sampling_rate = 1
-
-[observability.traces]
-enabled = false
-head_sampling_rate = 1
