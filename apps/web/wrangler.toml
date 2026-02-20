@@ -2,3 +2,18 @@ name = "spectracker"
 main = "./.output/server/index.mjs"
 compatibility_date = "2026-02-20"
 workers_dev = true
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1

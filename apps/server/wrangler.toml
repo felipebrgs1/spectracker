@@ -8,3 +8,18 @@ binding = "DB"
 database_name = "specdev"
 database_id = "522f179c-df17-400e-91fe-6c29191a97b4"
 migrations_dir = "../../packages/db/src/migrations"
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1
