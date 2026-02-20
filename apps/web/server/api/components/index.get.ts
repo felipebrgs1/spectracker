@@ -1,6 +1,7 @@
 import { componentsResponseSchema } from "@spectracker/contracts";
-import { categories, components, componentSpecs, db, sourceOffers } from "@spectracker/db";
+import { categories, components, componentSpecs, sourceOffers } from "@spectracker/db";
 import { asc, eq, inArray, or, sql } from "drizzle-orm";
+import { getDb } from "../../utils/db";
 
 function parseJsonObject(value: string | null): Record<string, unknown> | null {
 	if (!value) {
@@ -100,6 +101,7 @@ function parseCpuSpecsFromTitle(title: string): Record<string, string> {
 }
 
 export default defineEventHandler(async (event) => {
+	const db = getDb(useRuntimeConfig(event));
 	const query = getQuery(event);
 	const categorySlug = typeof query.category === "string" ? query.category : undefined;
 

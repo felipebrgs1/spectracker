@@ -1,8 +1,10 @@
 import { categoriesResponseSchema } from "@spectracker/contracts";
-import { categories, components, db, sourceOffers } from "@spectracker/db";
+import { categories, components, sourceOffers } from "@spectracker/db";
 import { asc, count } from "drizzle-orm";
+import { getDb } from "../../utils/db";
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+	const db = getDb(useRuntimeConfig(event));
 	const categoryRows = await db
 		.select({
 			id: categories.id,

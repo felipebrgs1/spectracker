@@ -1,7 +1,9 @@
-import { builds, categories, components, db, sourceOffers } from "@spectracker/db";
+import { builds, categories, components, sourceOffers } from "@spectracker/db";
 import { count } from "drizzle-orm";
+import { getDb } from "../../utils/db";
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+	const db = getDb(useRuntimeConfig(event));
 	const [componentTotal] = await db.select({ value: count(components.id) }).from(components);
 	const [offerTotal] = await db.select({ value: count(sourceOffers.id) }).from(sourceOffers);
 	const [buildTotal] = await db.select({ value: count(builds.id) }).from(builds);

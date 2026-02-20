@@ -5,8 +5,11 @@
 	"scripts": {
 		"build": "nuxt build",
 		"dev": "nuxt dev",
+		"dev:cf": "NITRO_PRESET=cloudflare_module nuxt dev",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
+		"preview:cf": "NITRO_PRESET=cloudflare_module nuxt build && npx wrangler dev .output/server/index.mjs",
+		"deploy:cf": "NITRO_PRESET=cloudflare_module nuxt build && npx wrangler deploy .output/server/index.mjs",
 		"start": "node .output/server/index.mjs",
 		"postinstall": "nuxt prepare"
 	},

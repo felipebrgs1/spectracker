@@ -1,20 +1,45 @@
-import { resolve } from "node:path";
-import dotenv from "dotenv";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "./schema/index";
 
-// Load environment variables from the monorepo root
-dotenv.config({ path: resolve(process.cwd(), "../../.env") });
+type DbCredentials = {
+	url: string;
+	authToken?: string;
+};
 
-const databaseUrl = process.env.DATABASE_URL || process.env.NUXT_DATABASE_URL || "";
-const databaseAuthToken = process.env.DATABASE_AUTH_TOKEN || process.env.NUXT_DATABASE_AUTH_TOKEN;
+type DbEnv = {
+	DATABASE_URL?: string;
+	DATABASE_AUTH_TOKEN?: string;
+	NUXT_DATABASE_URL?: string;
+	NUXT_DATABASE_AUTH_TOKEN?: string;
+};
 
-const client = createClient({
-	url: databaseUrl,
-	authToken: databaseAuthToken,
-});
+function resolveCredentials(env: DbEnv): DbCredentials {
+	const url = env.DATABASE_URL || env.NUXT_DATABASE_URL || "";
+	const authToken = env.DATABASE_AUTH_TOKEN || env.NUXT_DATABASE_AUTH_TOKEN;
+	return { url, authToken };
+}
 
-export const db = drizzle({ client, schema });
+export function createDb({ url, authToken }: DbCredentials) {
+	const client = createClient({
+		url,
+		authToken,
+	});
+
+	return drizzle({ client, schema });
+}
+
+function readProcessEnv(): DbEnv {
+	if (typeof process === "undefined" || !process.env) {
+		return {};
+	}
+	return process.env as DbEnv;
+}
+
+export function createDbFromEnv(env: DbEnv = readProcessEnv()) {
+	return createDb(resolveCredentials(env));
+}
+
+export const db = createDbFromEnv();
 export * from "./schema/index";

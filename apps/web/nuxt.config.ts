@@ -1,14 +1,8 @@
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
-import dotenv from "dotenv";
 import tailwindcss from "@tailwindcss/vite";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: resolve(__dirname, "../../.env") });
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-	compatibilityDate: "latest",
+	compatibilityDate: "2026-02-20",
 	devtools: { enabled: true },
 	modules: ["shadcn-nuxt", "@nuxtjs/color-mode"],
 	colorMode: {
@@ -22,7 +16,17 @@ export default defineNuxtConfig({
 		prefix: "",
 		componentDir: "./app/components/ui",
 	},
-	runtimeConfig: {},
+	runtimeConfig: {
+		databaseUrl: "",
+		databaseAuthToken: "",
+	},
+	nitro: {
+		preset: process.env.NITRO_PRESET || "cloudflare_module",
+		cloudflare: {
+			deployConfig: true,
+			nodeCompat: true,
+		},
+	},
 	vite: {
 		build: {
 			sourcemap: false,

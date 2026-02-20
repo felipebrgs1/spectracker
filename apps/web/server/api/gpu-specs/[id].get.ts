@@ -1,5 +1,6 @@
-import { db, techpowerupGpuSpecsQueue } from "@spectracker/db";
+import { techpowerupGpuSpecsQueue } from "@spectracker/db";
 import { eq } from "drizzle-orm";
+import { getDb } from "../../utils/db";
 import { pickCleanSpecsFromPayload } from "../../utils/gpu-specs";
 
 type JsonObject = Record<string, unknown>;
@@ -17,6 +18,7 @@ function parseJson(value: string | null): JsonObject | null {
 }
 
 export default defineEventHandler(async (event) => {
+	const db = getDb(useRuntimeConfig(event));
 	const id = getRouterParam(event, "id");
 	if (!id) {
 		throw createError({ statusCode: 400, statusMessage: "Missing id" });

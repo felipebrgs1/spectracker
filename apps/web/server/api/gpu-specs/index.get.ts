@@ -1,5 +1,6 @@
-import { db, techpowerupGpuSpecsQueue } from "@spectracker/db";
+import { techpowerupGpuSpecsQueue } from "@spectracker/db";
 import { and, desc, eq, like, or } from "drizzle-orm";
+import { getDb } from "../../utils/db";
 import { pickCleanSpecsFromPayload } from "../../utils/gpu-specs";
 
 type JsonObject = Record<string, unknown>;
@@ -89,6 +90,7 @@ function toCatalogItem(row: GpuQueueRow): GpuCatalogItem | null {
 }
 
 export default defineEventHandler(async (event) => {
+	const db = getDb(useRuntimeConfig(event));
 	const query = getQuery(event);
 	const search = typeof query.search === "string" ? query.search.trim() : "";
 	const limit = Math.min(Math.max(toInt(query.limit, 120), 1), 200);
