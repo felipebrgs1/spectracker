@@ -496,7 +496,10 @@ function detectTotalPagesFromLinks(links: unknown): number | null {
 	return maxPage > 0 ? maxPage : null;
 }
 
-function parseKabumProductsFromNextData(html: string, config: KabumCategoryConfig): ParsedKabumPage {
+function parseKabumProductsFromNextData(
+	html: string,
+	config: KabumCategoryConfig,
+): ParsedKabumPage {
 	const nextDataMatch = html.match(
 		/<script id=["']__NEXT_DATA__["'] type=["']application\/json["']>([\s\S]*?)<\/script>/i,
 	);
@@ -634,7 +637,9 @@ function parseKabumProductsFromNextData(html: string, config: KabumCategoryConfi
 		});
 	}
 
-	const pageSize = parseInteger(innerData.params && isObject(innerData.params) ? innerData.params.page_size : null);
+	const pageSize = parseInteger(
+		innerData.params && isObject(innerData.params) ? innerData.params.page_size : null,
+	);
 	const currentPage = parseInteger(
 		innerData.params && isObject(innerData.params) ? innerData.params.page_number : null,
 	);
@@ -651,10 +656,7 @@ function parseKabumProductsFromNextData(html: string, config: KabumCategoryConfi
 	};
 }
 
-function productNodeToOffer(
-	productNode: JsonObject,
-	config: KabumCategoryConfig,
-): RawOffer | null {
+function productNodeToOffer(productNode: JsonObject, config: KabumCategoryConfig): RawOffer | null {
 	const offersNode = toArray(productNode.offers).find((entry) => isObject(entry));
 	const imageValue = productNode.image;
 	const imageUrl = Array.isArray(imageValue)
@@ -709,14 +711,15 @@ function productNodeToOffer(
 
 async function fetchKabumOffers(config: KabumCategoryConfig): Promise<RawOffer[]> {
 	const deduplicated = new Map<string, RawOffer>();
-	const maxPagesRaw = Number.parseInt(process.env.INGESTION_KABUM_MAX_PAGES || "", 10);
-	const maxPages =
-		Number.isFinite(maxPagesRaw) && maxPagesRaw > 0 ? Math.min(maxPagesRaw, 200) : 25;
+	const maxPages = 25;
 
 	let currentPage = 1;
 	let discoveredTotalPages: number | null = null;
 
-	while (currentPage <= maxPages && (discoveredTotalPages === null || currentPage <= discoveredTotalPages)) {
+	while (
+		currentPage <= maxPages &&
+		(discoveredTotalPages === null || currentPage <= discoveredTotalPages)
+	) {
 		const pageUrl = new URL(config.url);
 		pageUrl.searchParams.set("page_number", String(currentPage));
 
@@ -762,7 +765,11 @@ async function fetchKabumOffers(config: KabumCategoryConfig): Promise<RawOffer[]
 			break;
 		}
 
-		if (!discoveredTotalPages && nextDataPage.pageSize && nextDataPage.productCount < nextDataPage.pageSize) {
+		if (
+			!discoveredTotalPages &&
+			nextDataPage.pageSize &&
+			nextDataPage.productCount < nextDataPage.pageSize
+		) {
 			break;
 		}
 

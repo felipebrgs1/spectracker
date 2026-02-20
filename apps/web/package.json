@@ -5,24 +5,21 @@
 	"scripts": {
 		"build": "nuxt build",
 		"dev": "nuxt dev",
-		"dev:cf": "NITRO_PRESET=cloudflare_module nuxt dev",
+		"dev:cf": "nuxt dev",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
-		"preview:cf": "NITRO_PRESET=cloudflare_module nuxt build && npx wrangler --cwd .output dev",
-		"deploy:cf": "NITRO_PRESET=cloudflare_module nuxt build && npx wrangler --cwd .output deploy",
+		"preview:cf": "nuxt build && npx wrangler --cwd .output dev",
+		"deploy:cf": "nuxt build && npx wrangler --cwd .output deploy",
 		"start": "node .output/server/index.mjs",
 		"postinstall": "nuxt prepare"
 	},
 	"dependencies": {
-		"@libsql/client": "catalog:",
 		"@nuxtjs/color-mode": "^4.0.0",
 		"@spectracker/contracts": "workspace:*",
-		"@spectracker/db": "workspace:*",
 		"@vueuse/core": "^14.2.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"dotenv": "catalog:",
-		"libsql": "catalog:",
+		"drizzle-orm": "^0.45.1",
 		"lucide-vue-next": "^0.564.0",
 		"nuxt": "^4.3.1",
 		"radix-vue": "^1.9.17",
@@ -30,8 +27,7 @@
 		"shadcn-nuxt": "^2.4.3",
 		"tailwind-merge": "^3.4.1",
 		"vue": "^3.5.28",
-		"vue-router": "^5.0.2",
-		"zod": "catalog:"
+		"vue-router": "^5.0.2"
 	},
 	"devDependencies": {
 		"@spectracker/config": "workspace:*",

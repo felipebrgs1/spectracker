@@ -269,7 +269,9 @@ function parseKabumProductsFromNextData(html: string): ParsedKabumPage {
 		});
 	}
 
-	const pageSize = parseInteger(innerData.params && isObject(innerData.params) ? innerData.params.page_size : null);
+	const pageSize = parseInteger(
+		innerData.params && isObject(innerData.params) ? innerData.params.page_size : null,
+	);
 	const totalPages =
 		detectTotalPagesFromPagination(innerData.catalogServer.pagination) ??
 		detectTotalPagesFromLinks(innerData.catalogServer.links);
@@ -337,14 +339,15 @@ function productNodeToOffer(productNode: JsonObject): RawOffer | null {
 
 export async function fetchKabumCpuOffers(): Promise<RawOffer[]> {
 	const deduplicated = new Map<string, RawOffer>();
-	const maxPagesRaw = Number.parseInt(process.env.INGESTION_KABUM_MAX_PAGES || "", 10);
-	const maxPages =
-		Number.isFinite(maxPagesRaw) && maxPagesRaw > 0 ? Math.min(maxPagesRaw, 200) : 25;
+	const maxPages = 25;
 
 	let currentPage = 1;
 	let discoveredTotalPages: number | null = null;
 
-	while (currentPage <= maxPages && (discoveredTotalPages === null || currentPage <= discoveredTotalPages)) {
+	while (
+		currentPage <= maxPages &&
+		(discoveredTotalPages === null || currentPage <= discoveredTotalPages)
+	) {
 		const pageUrl = new URL(KABUM_CPU_URL);
 		pageUrl.searchParams.set("page_number", String(currentPage));
 
@@ -394,7 +397,11 @@ export async function fetchKabumCpuOffers(): Promise<RawOffer[]> {
 			break;
 		}
 
-		if (!discoveredTotalPages && nextDataPage.pageSize && nextDataPage.productCount < nextDataPage.pageSize) {
+		if (
+			!discoveredTotalPages &&
+			nextDataPage.pageSize &&
+			nextDataPage.productCount < nextDataPage.pageSize
+		) {
 			break;
 		}
 

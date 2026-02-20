@@ -17,11 +17,10 @@ export default defineNuxtConfig({
 		componentDir: "./app/components/ui",
 	},
 	runtimeConfig: {
-		databaseUrl: "",
-		databaseAuthToken: "",
+		apiUrl: process.env.NUXT_API_URL || "http://127.0.0.1:8787",
 	},
 	nitro: {
-		preset: process.env.NITRO_PRESET || "cloudflare_module",
+		preset: "cloudflare_module",
 		cloudflare: {
 			deployConfig: true,
 			nodeCompat: true,

@@ -1,5 +1,29 @@
-const base = (process.env.INGESTION_BASE_URL || "http://localhost:3000").replace(/\/$/, "");
-const token = process.env.INGESTION_TOKEN;
+function parseArgs(argv) {
+	const options = {
+		base: "http://localhost:8787",
+		token: "",
+	};
+
+	for (let index = 2; index < argv.length; index += 1) {
+		const arg = argv[index];
+		if (arg === "--base") {
+			options.base = argv[index + 1] || options.base;
+			index += 1;
+			continue;
+		}
+		if (arg === "--token") {
+			options.token = argv[index + 1] || "";
+			index += 1;
+			continue;
+		}
+	}
+
+	return options;
+}
+
+const options = parseArgs(process.argv);
+const base = options.base.replace(/\/$/, "");
+const token = options.token;
 
 const headers = {};
 if (token) headers["x-ingestion-token"] = token;
@@ -43,22 +67,18 @@ async function main() {
 	}
 
 	try {
-		const response = await request(
-			`${base}/internal/ingestion/core/kabum`,
-			{ method: "POST", headers },
-			2,
-		);
+		const response = await request(`${base}/catalog/categories`, { method: "GET", headers }, 2);
 
 		const text = await response.text();
 		if (!response.ok) {
-			console.error(`Falha no scraping: HTTP ${response.status}`);
+			console.error(`Falha na consulta de catalogo: HTTP ${response.status}`);
 			console.error(text);
 			process.exit(1);
 		}
 
 		console.log(text);
 	} catch (error) {
-		console.error("Conexao encerrada durante o scraping.");
+		console.error("Conexao encerrada durante a consulta.");
 		console.error("Isso normalmente indica que o server reiniciou ou caiu durante o request.");
 		console.error("Confira os logs do terminal do `pnpm dev:server`.");
 		if (error?.cause?.code) {

@@ -1,1 +1,1 @@
-export * from "./web.ts";
+export * from "./web";

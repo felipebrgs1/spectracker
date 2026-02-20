@@ -1,4 +1,5 @@
 import { createClient } from "@libsql/client";
+import { drizzle as drizzleD1 } from "drizzle-orm/d1";
 import { drizzle } from "drizzle-orm/libsql";
 
 import * as schema from "./schema/index";
@@ -8,18 +9,9 @@ type DbCredentials = {
 	authToken?: string;
 };
 
-type DbEnv = {
-	DATABASE_URL?: string;
-	DATABASE_AUTH_TOKEN?: string;
-	NUXT_DATABASE_URL?: string;
-	NUXT_DATABASE_AUTH_TOKEN?: string;
+type D1DatabaseLike = {
+	prepare: (query: string) => unknown;
 };
-
-function resolveCredentials(env: DbEnv): DbCredentials {
-	const url = env.DATABASE_URL || env.NUXT_DATABASE_URL || "";
-	const authToken = env.DATABASE_AUTH_TOKEN || env.NUXT_DATABASE_AUTH_TOKEN;
-	return { url, authToken };
-}
 
 export function createDb({ url, authToken }: DbCredentials) {
 	const client = createClient({
@@ -30,16 +22,7 @@ export function createDb({ url, authToken }: DbCredentials) {
 	return drizzle({ client, schema });
 }
 
-function readProcessEnv(): DbEnv {
-	if (typeof process === "undefined" || !process.env) {
-		return {};
-	}
-	return process.env as DbEnv;
+export function createD1Db(client: D1DatabaseLike) {
+	return drizzleD1(client as any, { schema });
 }
-
-export function createDbFromEnv(env: DbEnv = readProcessEnv()) {
-	return createDb(resolveCredentials(env));
-}
-
-export const db = createDbFromEnv();
 export * from "./schema/index";

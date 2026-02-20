@@ -1,6 +1,3 @@
-import path from "node:path";
-import dotenv from "dotenv";
-
 const BASE_URL = "https://www.techpowerup.com";
 const LISTING_URL = `${BASE_URL}/gpu-specs/`;
 
@@ -28,7 +25,10 @@ const SPEC_KEY_ALIASES = [
 	{ key: "memory_type", patterns: [/^memory\s*type$/i] },
 	{ key: "memory_bus", patterns: [/^memory\s*bus$/i, /^bus\s*width$/i] },
 	{ key: "bandwidth", patterns: [/^bandwidth$/i, /^memory\s*bandwidth$/i] },
-	{ key: "shading_units", patterns: [/^shading\s*units$/i, /^cuda\s*cores$/i, /^stream\s*processors$/i] },
+	{
+		key: "shading_units",
+		patterns: [/^shading\s*units$/i, /^cuda\s*cores$/i, /^stream\s*processors$/i],
+	},
 	{ key: "tmus", patterns: [/^tmus$/i] },
 	{ key: "rops", patterns: [/^rops$/i] },
 	{ key: "rt_cores", patterns: [/^rt\s*cores$/i] },
@@ -108,9 +108,10 @@ function isConsumerTargetFromUrl(url) {
 	const isNvidia = /rtx-(3|4|5)\d{3}(?:-|\.|$)/i.test(normalized);
 	const isAmd = /rx-(6|7|9)\d{3}(?:-|\.|$)/i.test(normalized);
 	const isIntel = /intel-(?:arc|xe)|\/(?:arc|xe)-/i.test(normalized);
-	const excluded = /quadro|rtx-a\d{3,4}|radeon-pro|pro-w\d{3,4}|tesla|instinct|\bmi\d{2,3}\b|workstation|data-center/i.test(
-		normalized,
-	);
+	const excluded =
+		/quadro|rtx-a\d{3,4}|radeon-pro|pro-w\d{3,4}|tesla|instinct|\bmi\d{2,3}\b|workstation|data-center/i.test(
+			normalized,
+		);
 	return (isNvidia || isAmd || isIntel) && !excluded;
 }
 
@@ -118,10 +119,12 @@ function isConsumerTargetFromText(value) {
 	const normalized = (value || "").toLowerCase();
 	const isNvidia = /\brtx[\s-]?(3|4|5)\d{3}\b/i.test(normalized);
 	const isAmd = /\brx[\s-]?(6|7|9)\d{3}\b/i.test(normalized);
-	const isIntel = /\bintel\b/i.test(normalized) && (/\barc\b/i.test(normalized) || /\bxe\b/i.test(normalized));
-	const excluded = /\bquadro\b|\brtx\s*a\d{3,4}\b|\bradeon\s*pro\b|\bpro\s*w\d{3,4}\b|\btesla\b|\binstinct\b|\bmi\d{2,3}\b|\bdata\s*center\b|\bworkstation\b/i.test(
-		normalized,
-	);
+	const isIntel =
+		/\bintel\b/i.test(normalized) && (/\barc\b/i.test(normalized) || /\bxe\b/i.test(normalized));
+	const excluded =
+		/\bquadro\b|\brtx\s*a\d{3,4}\b|\bradeon\s*pro\b|\bpro\s*w\d{3,4}\b|\btesla\b|\binstinct\b|\bmi\d{2,3}\b|\bdata\s*center\b|\bworkstation\b/i.test(
+			normalized,
+		);
 	return (isNvidia || isAmd || isIntel) && !excluded;
 }
 
@@ -153,7 +156,10 @@ function parseArgs(argv) {
 		const arg = argv[index];
 		if (arg === "--models") {
 			const value = argv[index + 1] || "";
-			options.models = value.split(",").map((v) => v.trim()).filter(Boolean);
+			options.models = value
+				.split(",")
+				.map((v) => v.trim())
+				.filter(Boolean);
 			index += 1;
 			continue;
 		}
@@ -283,7 +289,9 @@ function parseTitle(html) {
 	}
 	const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
 	if (titleMatch?.[1]) {
-		return stripTags(titleMatch[1]).replace(/\s*[-|].*$/, "").trim();
+		return stripTags(titleMatch[1])
+			.replace(/\s*[-|].*$/, "")
+			.trim();
 	}
 	return null;
 }
@@ -343,11 +351,17 @@ function parseSpecs(html) {
 
 	setMissing("gpu_name", capture(/GPU Name\s+([A-Z0-9._-]+)/i));
 	setMissing("architecture", capture(/Architecture\s+([^\n]+)/i));
-	setMissing("release_date", capture(/Release Date\s+([A-Za-z]{3,10}\s+\d{1,2}(?:st|nd|rd|th)?,\s+\d{4})/i));
+	setMissing(
+		"release_date",
+		capture(/Release Date\s+([A-Za-z]{3,10}\s+\d{1,2}(?:st|nd|rd|th)?,\s+\d{4})/i),
+	);
 	setMissing("bus_interface", capture(/Bus Interface\s+([^\n]+)/i));
 	setMissing("base_clock", capture(/Base Clock\s+([0-9.]+\s*MHz)/i));
 	setMissing("boost_clock", capture(/Boost Clock\s+([0-9.]+\s*MHz)/i));
-	setMissing("memory_clock", capture(/Memory Clock\s+([0-9.]+\s*MHz(?:\s*\|\s*[0-9.]+\s*Gbps[^ \n]*)?)/i));
+	setMissing(
+		"memory_clock",
+		capture(/Memory Clock\s+([0-9.]+\s*MHz(?:\s*\|\s*[0-9.]+\s*Gbps[^ \n]*)?)/i),
+	);
 	setMissing("memory_size", capture(/Memory Size\s+([0-9.]+\s*GB)/i));
 	setMissing("memory_type", capture(/Memory Type\s+((?:GDDR\dX?|HBM\dE?)[^\n]*)/i));
 	setMissing("memory_bus", capture(/Memory Bus\s+([0-9.]+\s*-?\s*bit)/i));
@@ -363,16 +377,21 @@ function parseSpecs(html) {
 }
 
 async function initDb() {
-	dotenv.config({ path: path.resolve(process.cwd(), ".env") });
-	if (!process.env.DATABASE_URL) {
-		dotenv.config({ path: path.resolve(process.cwd(), "../../.env"), override: false });
+	const args = new Map();
+	for (let index = 2; index < process.argv.length; index += 1) {
+		const key = process.argv[index];
+		const value = process.argv[index + 1];
+		if (key?.startsWith("--")) {
+			args.set(key, value ?? "");
+			index += 1;
+		}
 	}
 
-	const databaseUrl = process.env.DATABASE_URL || process.env.NUXT_DATABASE_URL || "";
-	const authToken = process.env.DATABASE_AUTH_TOKEN || process.env.NUXT_DATABASE_AUTH_TOKEN;
+	const databaseUrl = args.get("--database-url") || "";
+	const authToken = args.get("--auth-token") || undefined;
 
 	if (!databaseUrl) {
-		throw new Error("DATABASE_URL not found in .env");
+		throw new Error("Missing --database-url.");
 	}
 
 	const { createClient } = await import("@libsql/client");
@@ -575,7 +594,8 @@ async function processQueue(client, options) {
 			const html = await fetchHtmlWithRetries(row.url, 4);
 			const title = parseTitle(html) || row.gpuName || row.url;
 			const { rawSpecs, normalizedSpecs } = parseSpecs(html);
-			const candidateName = title || normalizedSpecs.gpu_name || rawSpecs["Graphics Processor"] || "";
+			const candidateName =
+				title || normalizedSpecs.gpu_name || rawSpecs["Graphics Processor"] || "";
 
 			if (!isConsumerTargetFromText(candidateName)) {
 				await markSkipped(client, row.id, title, {
@@ -599,7 +619,9 @@ async function processQueue(client, options) {
 		await sleep(randomInt(450, 1300));
 	}
 
-	log(`queue processing done: success=${successCount}, failed=${failedCount}, skipped=${skippedCount}`);
+	log(
+		`queue processing done: success=${successCount}, failed=${failedCount}, skipped=${skippedCount}`,
+	);
 }
 
 async function printQueueSummary(client) {

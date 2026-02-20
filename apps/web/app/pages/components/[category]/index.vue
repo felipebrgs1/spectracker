@@ -66,11 +66,7 @@ const filteredItems = computed(() => {
 		</div>
 
 		<div v-else class="space-y-2">
-			<CatalogComponentListItem
-				v-for="item in filteredItems"
-				:key="item.id"
-				:item="item"
-			/>
+			<CatalogComponentListItem v-for="item in filteredItems" :key="item.id" :item="item" />
 		</div>
 	</div>
 </template>

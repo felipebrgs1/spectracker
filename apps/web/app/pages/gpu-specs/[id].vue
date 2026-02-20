@@ -59,7 +59,12 @@ const missingRows = computed(() => rows.value.filter((row) => row.value === "-")
 			</div>
 			<div class="flex items-center gap-2">
 				<Button as-child variant="outline" size="sm">
-					<a :href="data?.url" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1">
+					<a
+						:href="data?.url"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="inline-flex items-center gap-1"
+					>
 						Fonte <ExternalLink class="size-3.5" />
 					</a>
 				</Button>
@@ -95,12 +100,10 @@ const missingRows = computed(() => rows.value.filter((row) => row.value === "-")
 						Este modelo não possui specs detalhadas suficientes no payload atual.
 					</div>
 					<div v-else class="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-						<div
-							v-for="row in availableRows"
-							:key="row.key"
-							class="rounded-md border p-3"
-						>
-							<p class="flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground">
+						<div v-for="row in availableRows" :key="row.key" class="rounded-md border p-3">
+							<p
+								class="flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground"
+							>
 								<component :is="row.icon" class="size-3.5" />
 								{{ row.label }}
 							</p>

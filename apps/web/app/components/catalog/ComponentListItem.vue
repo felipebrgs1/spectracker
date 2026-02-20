@@ -21,7 +21,9 @@ function formatPrice(priceInCents: number): string {
 	<Card class="overflow-hidden border-border/70">
 		<CardContent class="p-2">
 			<div class="flex flex-col gap-5 md:flex-row md:items-center">
-				<div class="relative size-24 w-full shrink-0 overflow-hidden rounded-lg border bg-muted/30 md:size-48">
+				<div
+					class="relative size-24 w-full shrink-0 overflow-hidden rounded-lg border bg-muted/30 md:size-48"
+				>
 					<img
 						v-if="props.item.imageUrl"
 						:src="props.item.imageUrl"
@@ -74,7 +76,9 @@ function formatPrice(priceInCents: number): string {
 							rel="noreferrer noopener"
 							class="mt-2 inline-block"
 						>
-							<Button size="sm" class="bg-emerald-600! hover:bg-emerald-700!">Link do produto</Button>
+							<Button size="sm" class="bg-emerald-600! hover:bg-emerald-700!"
+								>Link do produto</Button
+							>
 						</a>
 					</div>
 				</div>

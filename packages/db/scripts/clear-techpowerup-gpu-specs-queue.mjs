@@ -1,17 +1,19 @@
-import path from "node:path";
-import dotenv from "dotenv";
-
 async function main() {
-	dotenv.config({ path: path.resolve(process.cwd(), ".env") });
-	if (!process.env.DATABASE_URL) {
-		dotenv.config({ path: path.resolve(process.cwd(), "../../.env"), override: false });
+	const args = new Map();
+	for (let index = 2; index < process.argv.length; index += 1) {
+		const key = process.argv[index];
+		const value = process.argv[index + 1];
+		if (key?.startsWith("--")) {
+			args.set(key, value ?? "");
+			index += 1;
+		}
 	}
 
-	const databaseUrl = process.env.DATABASE_URL || process.env.NUXT_DATABASE_URL || "";
-	const authToken = process.env.DATABASE_AUTH_TOKEN || process.env.NUXT_DATABASE_AUTH_TOKEN;
+	const databaseUrl = args.get("--database-url") || "";
+	const authToken = args.get("--auth-token") || undefined;
 
 	if (!databaseUrl) {
-		throw new Error("DATABASE_URL not found in .env");
+		throw new Error("Missing --database-url.");
 	}
 
 	const { createClient } = await import("@libsql/client");

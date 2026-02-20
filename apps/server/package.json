@@ -5,28 +5,21 @@
 	"scripts": {
 		"build": "tsdown",
 		"check-types": "tsc -b",
-		"compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
-		"dev": "bun run --hot src/index.ts",
-		"preview": "PORT=${PREVIEW_SERVER_PORT:-0} CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000} bun run src/index.ts",
-		"start": "bun run dist/index.mjs"
+		"dev": "wrangler dev -c ../../wrangler.toml",
+		"preview": "wrangler dev -c ../../wrangler.toml",
+		"start": "wrangler dev -c ../../wrangler.toml",
+		"deploy": "wrangler deploy -c ../../wrangler.toml"
 	},
 	"dependencies": {
-		"@elysiajs/cors": "^1.4.1",
-		"@libsql/client": "catalog:",
-		"@orpc/openapi": "catalog:",
-		"@orpc/server": "catalog:",
-		"@orpc/zod": "catalog:",
-		"@spectracker/api": "workspace:*",
+		"@spectracker/contracts": "workspace:*",
 		"@spectracker/db": "workspace:*",
-		"dotenv": "catalog:",
-		"elysia": "catalog:",
-		"libsql": "catalog:",
-		"zod": "catalog:"
+		"drizzle-orm": "^0.45.1"
 	},
 	"devDependencies": {
 		"@spectracker/config": "workspace:*",
 		"@types/bun": "catalog:",
 		"tsdown": "^0.20.3",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"wrangler": "^4.40.2"
 	}
 }

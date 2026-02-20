@@ -1,6 +1,6 @@
 # spectracker
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Nuxt, Elysia, ORPC, and more.
+This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack.
 
 ## Features
 
@@ -8,11 +8,9 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **Nuxt** - The Intuitive Vue Framework
 - **TailwindCSS** - Utility-first CSS for rapid UI development
 - **shadcn/ui** - Reusable UI components
-- **Elysia** - Type-safe, high-performance framework
-- **oRPC** - End-to-end type-safe APIs with OpenAPI integration
-- **Bun** - Runtime environment
+- **Cloudflare Workers + Wrangler** - Runtime and deployment
 - **Drizzle** - TypeScript-first ORM
-- **SQLite/Turso** - Database engine
+- **Cloudflare D1** - Database engine
 - **Oxlint** - Oxlint + Oxfmt (linting & formatting)
 - **Turborepo** - Optimized monorepo build system
 
@@ -26,21 +24,11 @@ pnpm install
 
 ## Database Setup
 
-This project uses SQLite with Drizzle ORM.
+This project uses Cloudflare D1 with Drizzle ORM in the Nuxt worker (`apps/web`).
 
-1. Start the local SQLite database (optional):
-
-```bash
-pnpm run db:local
-```
-
-2. Update your `.env` file in the `apps/server` directory with the appropriate connection details if needed.
-
-3. Apply the schema to your database:
-
-```bash
-pnpm run db:push
-```
+1. Set `database_id` in `apps/web/wrangler.toml`.
+2. Use `binding = "DB"` in `apps/web/wrangler.toml`.
+3. Run `pnpm run dev:web` (single worker).
 
 Then, run the development server:
 
@@ -49,7 +37,7 @@ pnpm run dev
 ```
 
 Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+The app runs in a single worker (web + server routes).
 
 ## Formatting
 
@@ -61,7 +49,7 @@ The API is running at [http://localhost:3000](http://localhost:3000).
 spectracker/
 ├── apps/
 │   ├── web/         # Frontend application (Nuxt)
-│   └── server/      # Backend API (Elysia, ORPC)
+│   └── server/      # Backend API (Cloudflare Worker)
 ├── packages/
 │   ├── api/         # API layer / business logic
 │   └── db/          # Database schema & queries
@@ -78,5 +66,4 @@ spectracker/
 - `pnpm run db:generate`: Generate database client/types
 - `pnpm run db:migrate`: Run database migrations
 - `pnpm run db:studio`: Open database studio UI
-- `pnpm run db:local`: Start the local SQLite database
 - `pnpm run check`: Run Oxlint and Oxfmt

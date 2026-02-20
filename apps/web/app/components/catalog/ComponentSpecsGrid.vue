@@ -49,7 +49,10 @@ function topSpecs(item: ComponentItem): Array<{ label: string; value: string }> 
 		result.push({ label: "Modelo", value: item.model });
 	}
 	if (result.length < 4) {
-		result.push({ label: "Estoque", value: item.inStock === false ? "Indisponível" : "Disponível" });
+		result.push({
+			label: "Estoque",
+			value: item.inStock === false ? "Indisponível" : "Disponível",
+		});
 	}
 
 	return result;
@@ -60,7 +63,11 @@ function specIcon(label: string) {
 	if (normalized.includes("socket")) {
 		return Cpu;
 	}
-	if (normalized.includes("núcleo") || normalized.includes("core") || normalized.includes("thread")) {
+	if (
+		normalized.includes("núcleo") ||
+		normalized.includes("core") ||
+		normalized.includes("thread")
+	) {
 		return Layers3;
 	}
 	if (normalized.includes("frequ") || normalized.includes("clock") || normalized.includes("ghz")) {

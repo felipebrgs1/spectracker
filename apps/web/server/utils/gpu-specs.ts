@@ -184,12 +184,9 @@ export function pickCleanSpecsFromPayload(
 		specs.memory_clock = memoryClock;
 	}
 
-	const memoryBus = lookupValueFromMaps(maps, [
-		"memory_bus",
-		"memory bus",
-		"bus_width",
-		"bus width",
-	]) || findFirstMatch(allValues, /\b\d{2,4}\s*-?\s*bit\b/i);
+	const memoryBus =
+		lookupValueFromMaps(maps, ["memory_bus", "memory bus", "bus_width", "bus width"]) ||
+		findFirstMatch(allValues, /\b\d{2,4}\s*-?\s*bit\b/i);
 	if (memoryBus) {
 		specs.memory_bus = memoryBus.replace(/\s+/g, " ");
 	}
