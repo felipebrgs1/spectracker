@@ -5,6 +5,7 @@ export default defineConfig({
 	format: "esm",
 	outDir: "./dist",
 	clean: true,
+	inlineOnly: false,
 	noExternal: [/@spectracker\/.*/],
 	external: ["libsql", "@libsql/client", /@libsql\/.*/],
 });
