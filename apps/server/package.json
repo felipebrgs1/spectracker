@@ -7,11 +7,12 @@
 		"check-types": "tsc -b",
 		"compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
 		"dev": "bun run --hot src/index.ts",
-		"preview": "bun run src/index.ts",
+		"preview": "PORT=${PREVIEW_SERVER_PORT:-0} CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000} bun run src/index.ts",
 		"start": "bun run dist/index.mjs"
 	},
 	"dependencies": {
 		"@elysiajs/cors": "^1.4.1",
+		"@libsql/client": "catalog:",
 		"@orpc/openapi": "catalog:",
 		"@orpc/server": "catalog:",
 		"@orpc/zod": "catalog:",
@@ -19,6 +20,7 @@
 		"@spectracker/db": "workspace:*",
 		"dotenv": "catalog:",
 		"elysia": "catalog:",
+		"libsql": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

@@ -8,6 +8,13 @@
       "when": 1771527626955,
       "tag": "0000_slimy_the_enforcers",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1771528000000,
+      "tag": "0001_gpu_specs_queue_status_updated_at_idx",
+      "breakpoints": true
     }
   ]
 }

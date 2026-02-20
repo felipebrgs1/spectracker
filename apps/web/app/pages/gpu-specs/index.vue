@@ -25,7 +25,7 @@ const search = ref("");
 
 const query = computed(() => ({
 	search: search.value || undefined,
-	limit: 200,
+	limit: 50,
 }));
 
 const { data, pending, refresh } = await useFetch<GpuCatalogResponse>("/api/gpu-specs", {
@@ -56,7 +56,9 @@ function hasSpec(item: GpuCatalogItem, key: string): boolean {
 		<Card>
 			<CardContent class="p-4">
 				<label class="relative block">
-					<Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+					<Search
+						class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+					/>
 					<input
 						v-model="search"
 						type="text"
@@ -99,7 +101,9 @@ function hasSpec(item: GpuCatalogItem, key: string): boolean {
 
 				<div class="mt-3 grid grid-cols-2 gap-2 text-xs">
 					<div v-if="hasSpec(item, 'boost_clock')" class="rounded-md border p-2">
-						<p class="flex items-center gap-1 text-muted-foreground"><Gauge class="size-3.5" /> Boost</p>
+						<p class="flex items-center gap-1 text-muted-foreground">
+							<Gauge class="size-3.5" /> Boost
+						</p>
 						<p class="mt-0.5 font-medium">{{ spec(item, "boost_clock") }}</p>
 					</div>
 					<div v-if="hasSpec(item, 'memory_size')" class="rounded-md border p-2">
@@ -109,7 +113,9 @@ function hasSpec(item: GpuCatalogItem, key: string): boolean {
 						<p class="mt-0.5 font-medium">{{ spec(item, "memory_size") }}</p>
 					</div>
 					<div v-if="hasSpec(item, 'memory_bus')" class="rounded-md border p-2">
-						<p class="flex items-center gap-1 text-muted-foreground"><Cpu class="size-3.5" /> Bus</p>
+						<p class="flex items-center gap-1 text-muted-foreground">
+							<Cpu class="size-3.5" /> Bus
+						</p>
 						<p class="mt-0.5 font-medium">{{ spec(item, "memory_bus") }}</p>
 					</div>
 					<div v-if="hasSpec(item, 'release_date')" class="rounded-md border p-2">

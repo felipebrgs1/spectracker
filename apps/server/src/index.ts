@@ -42,7 +42,10 @@ const apiHandler = new OpenAPIHandler(appRouter, {
 
 startIngestionScheduler();
 
-new Elysia()
+const configuredPort = Number.parseInt(process.env.PORT ?? "", 10);
+const port = Number.isFinite(configuredPort) ? configuredPort : 3000;
+
+const app = new Elysia()
 	.use(
 		cors({
 			origin: process.env.CORS_ORIGIN || "http://localhost:5173",
@@ -132,6 +135,54 @@ new Elysia()
 		});
 	})
 	.get("/", () => "OK")
-	.listen(3000, () => {
-		console.log("Server is running on http://localhost:3000");
-	});
+;
+
+function isAddressInUseError(error: unknown): boolean {
+	return Boolean(
+		error &&
+			typeof error === "object" &&
+			"code" in error &&
+			(error as { code?: string }).code === "EADDRINUSE",
+	);
+}
+
+function resolveListeningPort(server: unknown, fallbackPort: number): number {
+	if (
+		server &&
+		typeof server === "object" &&
+		"server" in server &&
+		(server as { server?: unknown }).server &&
+		typeof (server as { server?: unknown }).server === "object" &&
+		"port" in ((server as { server?: { port?: unknown } }).server ?? {})
+	) {
+		const actualPort = Number(
+			(server as { server?: { port?: unknown } }).server?.port,
+		);
+		return Number.isFinite(actualPort) ? actualPort : fallbackPort;
+	}
+
+	return fallbackPort;
+}
+
+function startServerWithPortFallback(initialPort: number, maxAttempts = 200): void {
+	for (let offset = 0; offset < maxAttempts; offset += 1) {
+		const candidatePort = initialPort + offset;
+		try {
+			const server = app.listen(candidatePort);
+			const listeningPort = resolveListeningPort(server, candidatePort);
+			console.log(`Server is running on http://localhost:${listeningPort}`);
+			return;
+		} catch (error) {
+			if (isAddressInUseError(error)) {
+				continue;
+			}
+			throw error;
+		}
+	}
+
+	throw new Error(
+		`Could not start server: no available port found between ${initialPort} and ${initialPort + maxAttempts - 1}.`,
+	);
+}
+
+startServerWithPortFallback(port);

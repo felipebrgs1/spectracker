@@ -9,6 +9,7 @@
 	"scripts": {
 		"dev": "turbo dev",
 		"build": "turbo build",
+		"start": "turbo start --filter=server --filter=web",
 		"preview": "pnpm build && turbo preview --filter=server --filter=web",
 		"check-types": "turbo check-types",
 		"dev:native": "turbo -F native dev",
