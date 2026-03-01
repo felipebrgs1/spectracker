@@ -3,14 +3,14 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "next build",
-		"dev": "next dev",
-		"dev:cf": "next dev",
-		"generate": "next build",
-		"preview": "next start",
-		"preview:cf": "next build && rm -f .wrangler/deploy/config.json && pnpm exec wrangler pages dev .next",
-		"deploy:cf": "next build && rm -f .wrangler/deploy/config.json && pnpm exec wrangler pages deploy .next",
-		"start": "next start"
+		"build": "vinext build",
+		"dev": "vinext dev",
+		"dev:cf": "vinext dev",
+		"generate": "vinext build",
+		"preview": "vinext start",
+		"preview:cf": "vinext build && rm -f .wrangler/deploy/config.json && pnpm exec wrangler pages dev dist",
+		"deploy:cf": "vinext build && rm -f .wrangler/deploy/config.json && pnpm exec wrangler pages deploy dist",
+		"start": "vinext start"
 	},
 	"dependencies": {
 		"@radix-ui/react-dropdown-menu": "^2.1.16",
@@ -20,22 +20,24 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"lucide-react": "^0.575.0",
-		"next": "^16.1.6",
 		"next-themes": "^0.4.6",
 		"radix-ui": "^1.4.3",
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4",
-		"tailwind-merge": "^3.4.1"
+		"react-server-dom-webpack": "^19.2.4",
+		"tailwind-merge": "^3.4.1",
+		"vinext": "^0.0.16"
 	},
 	"devDependencies": {
 		"@spectracker/config": "workspace:*",
-		"@tailwindcss/postcss": "^4.2.1",
 		"@tailwindcss/vite": "^4.1.18",
 		"@types/node": "25.3.3",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
+		"@vitejs/plugin-rsc": "^0.5.21",
 		"tailwindcss": "^4.1.18",
 		"typescript": "catalog:",
+		"vite": "^7.3.1",
 		"wrangler": "^4.67.0"
 	}
 }
