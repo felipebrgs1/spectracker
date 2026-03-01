@@ -9,12 +9,7 @@ import {
 	ExternalLink,
 	ChevronLeft,
 } from "lucide-react";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -42,11 +37,7 @@ async function getGpuDetail(id: string) {
 	return await res.json();
 }
 
-export default async function GpuDetailPage({
-	params,
-}: {
-	params: Promise<{ id: string }>;
-}) {
+export default async function GpuDetailPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = await params;
 	const data: GpuDetail | null = await getGpuDetail(id);
 
@@ -107,11 +98,7 @@ export default async function GpuDetailPage({
 					<CardContent className="p-3">
 						<div className="aspect-4/3verflow-hidden rounded-md border bg-muted/30">
 							{data.imageUrl ? (
-								<img
-									src={data.imageUrl}
-									alt={data.name}
-									className="size-full object-cover"
-								/>
+								<img src={data.imageUrl} alt={data.name} className="size-full object-cover" />
 							) : (
 								<div className="flex size-full items-center justify-center">
 									<Cpu className="size-8 text-muted-foreground" />
@@ -138,9 +125,7 @@ export default async function GpuDetailPage({
 											<row.icon className="size-3" />
 											{row.label}
 										</p>
-										<p className="mt-1 text-sm font-semibold wrap-break-wordword">
-											{row.value}
-										</p>
+										<p className="mt-1 text-sm font-semibold wrap-break-wordword">{row.value}</p>
 									</div>
 								))}
 							</div>

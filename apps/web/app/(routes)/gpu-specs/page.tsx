@@ -1,10 +1,4 @@
-import {
-	Search,
-	Cpu,
-	Gauge,
-	MemoryStick,
-	CalendarDays,
-} from "lucide-react";
+import { Search, Cpu, Gauge, MemoryStick, CalendarDays } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -73,12 +67,18 @@ export default async function GpuSpecsPage({
 				<div>
 					<h1 className="text-2xl font-bold tracking-tight">GPU Specs</h1>
 					<p className="text-sm text-muted-foreground">
-						Catálogo visual das GPUs, focado nas especificações principais do
-						chip.
+						Catálogo visual das GPUs, focado nas especificações principais do chip.
 					</p>
 				</div>
-				<form action={async () => { "use server"; redirect("/gpu-specs"); }}>
-					<Button variant="outline" type="submit">Atualizar</Button>
+				<form
+					action={async () => {
+						"use server";
+						redirect("/gpu-specs");
+					}}
+				>
+					<Button variant="outline" type="submit">
+						Atualizar
+					</Button>
 				</form>
 			</div>
 
@@ -97,9 +97,7 @@ export default async function GpuSpecsPage({
 				</CardContent>
 			</Card>
 
-			<p className="text-sm text-muted-foreground">
-				{data.total} GPUs encontradas
-			</p>
+			<p className="text-sm text-muted-foreground">{data.total} GPUs encontradas</p>
 
 			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
 				{data.items.map((item) => (
@@ -124,12 +122,8 @@ export default async function GpuSpecsPage({
 								)}
 							</div>
 							<div className="min-w-0 flex-1">
-								<p className="line-clamp-2 font-semibold leading-snug">
-									{item.name}
-								</p>
-								<p className="mt-1 text-xs text-muted-foreground">
-									{spec(item, "architecture")}
-								</p>
+								<p className="line-clamp-2 font-semibold leading-snug">{item.name}</p>
+								<p className="mt-1 text-xs text-muted-foreground">{spec(item, "architecture")}</p>
 							</div>
 						</div>
 

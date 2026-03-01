@@ -37,9 +37,7 @@ export default async function ComponentsPage() {
 		<div className="space-y-6">
 			<div>
 				<h1 className="text-2xl font-bold tracking-tight">Components</h1>
-				<p className="text-muted-foreground">
-					Browse all PC components in the database.
-				</p>
+				<p className="text-muted-foreground">Browse all PC components in the database.</p>
 			</div>
 
 			{data.items.length === 0 ? (
@@ -50,8 +48,8 @@ export default async function ComponentsPage() {
 						</div>
 						<h3 className="mt-4 font-medium">No Components Yet</h3>
 						<p className="mt-1 max-w-sm text-center text-sm text-muted-foreground">
-							Found {data.total} components. This list will populate once the
-							database is seeded with hardware data.
+							Found {data.total} components. This list will populate once the database is seeded
+							with hardware data.
 						</p>
 					</CardContent>
 				</Card>
@@ -71,9 +69,7 @@ export default async function ComponentsPage() {
 										{item.inStock === false && " • out of stock"}
 									</p>
 								</div>
-								<p className="shrink-0 font-semibold">
-									{formatPrice(item.price)}
-								</p>
+								<p className="shrink-0 font-semibold">{formatPrice(item.price)}</p>
 							</div>
 						</Link>
 					))}

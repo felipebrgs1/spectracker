@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function GET(
-	request: Request,
-	{ params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
 	const { id } = await params;
 	const apiUrl = process.env.API_URL || "http://localhost:8787";
 
@@ -13,10 +10,7 @@ export async function GET(
 
 	if (!res.ok) {
 		const status = res.status === 404 ? 404 : 500;
-		return NextResponse.json(
-			{ error: "Failed to fetch GPU detail" },
-			{ status }
-		);
+		return NextResponse.json({ error: "Failed to fetch GPU detail" }, { status });
 	}
 
 	const data = await res.json();

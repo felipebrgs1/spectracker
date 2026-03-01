@@ -31,6 +31,9 @@
 		".next",
 		".output",
 		"dist",
-		"node_modules"
+		"node_modules",
+		"*.json",
+		"**/components/ui/**/*",
+		"**/*.toml"
 	]
 }

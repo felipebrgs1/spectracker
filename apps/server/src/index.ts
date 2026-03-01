@@ -113,8 +113,8 @@ function parseCpuSpecsFromTitle(title: string): Record<string, string> {
 		specs.socket = socket;
 	}
 
-	const clockMatches = Array.from(normalized.matchAll(/(\d+(?:[.,]\d+)?)\s*GHz/gi)).map((match) =>
-		match[1]?.replace(",", ".") || "",
+	const clockMatches = Array.from(normalized.matchAll(/(\d+(?:[.,]\d+)?)\s*GHz/gi)).map(
+		(match) => match[1]?.replace(",", ".") || "",
 	);
 	if (clockMatches[0]) {
 		specs.base_clock_ghz = clockMatches[0];

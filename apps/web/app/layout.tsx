@@ -27,11 +27,7 @@ export const metadata: Metadata = {
 	description: "Build your perfect PC with smart compatibility checking.",
 };
 
-export default function RootLayout({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
 			<body className="antialiased">
@@ -41,10 +37,7 @@ export default function RootLayout({
 						<header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-lg">
 							<div className="mx-auto flex h-14 max-w-screen-2xl items-center gap-4 px-4 sm:px-6 lg:px-8">
 								{/* Logo */}
-								<Link
-									href="/"
-									className="flex items-center gap-2 font-semibold tracking-tight"
-								>
+								<Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
 									<div className="flex size-8 items-center justify-center rounded-lg bg-primary">
 										<Cpu className="size-4 text-primary-foreground" />
 									</div>
@@ -63,9 +56,7 @@ export default function RootLayout({
 						</header>
 
 						{/* Content */}
-						<main className="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">
-							{children}
-						</main>
+						<main className="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">{children}</main>
 					</div>
 				</Providers>
 			</body>

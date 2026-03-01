@@ -17,10 +17,7 @@ export async function GET(request: Request) {
 	});
 
 	if (!res.ok) {
-		return NextResponse.json(
-			{ error: "Failed to fetch GPU specs" },
-			{ status: 500 }
-		);
+		return NextResponse.json({ error: "Failed to fetch GPU specs" }, { status: 500 });
 	}
 
 	const data = await res.json();

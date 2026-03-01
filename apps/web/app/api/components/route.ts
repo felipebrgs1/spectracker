@@ -15,10 +15,7 @@ export async function GET(request: Request) {
 	});
 
 	if (!res.ok) {
-		return NextResponse.json(
-			{ error: "Failed to fetch components" },
-			{ status: 500 }
-		);
+		return NextResponse.json({ error: "Failed to fetch components" }, { status: 500 });
 	}
 
 	const data = await res.json();

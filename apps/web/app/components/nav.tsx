@@ -20,9 +20,7 @@ export function Nav() {
 					key={item.to}
 					href={item.to}
 					className={`inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
-						pathname === item.to
-							? "bg-accent text-accent-foreground"
-							: "text-muted-foreground"
+						pathname === item.to ? "bg-accent text-accent-foreground" : "text-muted-foreground"
 					}`}
 				>
 					{item.label}

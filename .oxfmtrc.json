@@ -12,6 +12,9 @@
 		".output",
 		"dist",
 		"node_modules",
-		"pnpm-lock.yaml"
+		"pnpm-lock.yaml",
+		"*.json",
+		"**/components/ui/**/*",
+		"**/*.toml"
 	]
 }
