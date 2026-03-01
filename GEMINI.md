@@ -8,7 +8,7 @@ SpecTracker is a PCPartPicker-style web app for building PC configurations with 
 
 | Layer         | Technology                                           |
 | ------------- | ---------------------------------------------------- |
-| Framework     | **Next.js 16+** (App Router, Server Components)      |
+| Framework     | **Vinext** (App Router, Server Components)           |
 | UI Components | **shadcn/ui** (React version, installed via CLI)     |
 | Styling       | **Tailwind CSS v4** (via `@tailwindcss/vite` plugin) |
 | Icons         | **lucide-react**                                     |

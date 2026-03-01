@@ -2,7 +2,9 @@
 node_modules
 .pnp
 .pnp.js
-
+.oxlintrc-auto-import.json
+auto-import.json
+auto-imports.d.ts
 # Build outputs
 dist
 build
