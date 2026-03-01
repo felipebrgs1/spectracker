@@ -8,18 +8,18 @@ SpecTracker is a PCPartPicker-style web app for building PC configurations with 
 
 | Layer         | Technology                                           |
 | ------------- | ---------------------------------------------------- |
-| Framework     | **Vinext** (App Router, Server Components)           |
+| Framework     | **Vinext** (React-based, RSC, Vite-powered)          |
 | UI Components | **shadcn/ui** (React version, installed via CLI)     |
 | Styling       | **Tailwind CSS v4** (via `@tailwindcss/vite` plugin) |
 | Icons         | **lucide-react**                                     |
 | Dark Mode     | **next-themes** (class-based)                        |
-| API Pattern   | **Next.js Route Handlers** (BFF pattern)             |
+| API Pattern   | **API Masking** (Next-style Route Handlers as Proxy) |
 | ORM           | **Drizzle ORM** (`drizzle-orm` + `drizzle-kit`)      |
 | Database      | **Cloudflare D1** (SQLite) via `drizzle-orm/d1`      |
 | Validation    | **Zod v4**                                           |
-| Server (ext)  | **Elysia** + **oRPC** (standalone API)               |
+| Server (ext)  | **Elysia** + **oRPC** (Standalone API on Workers)    |
 | Monorepo      | **Turborepo** + **pnpm workspaces**                  |
-| Runtime       | **Bun** (server app) / **Node** (Next.js)            |
+| Runtime       | **Bun** (Monorepo/Scripts) / **Cloudflare Workers**  |
 | Linting       | **oxlint** + **oxfmt**                               |
 
 ## Architecture
@@ -44,17 +44,18 @@ spectracker/
 
 ## Critical Rules
 
-### 1. API Consumption & Separation of Concerns
+### 1. API Consumption & API Masking
 
-The frontend (`apps/web`) MUST consume the backend API (`apps/server`) for all data operations.
+The frontend (`apps/web`) MUST consume the backend API (`apps/server`) for ALL data operations. The frontend acts ONLY as a proxy (**API Masking**).
 
 ```
-Browser/Next.js → Next.js Route Handler (app/api/) → apps/server (Elysia API) → @spectracker/db
+Browser/React → Vinext Route Handler (app/api/) → apps/server (Elysia API) → @spectracker/db
 ```
 
-- Pages and components use `fetch('/api/...')` from client or direct fetch from Server Components.
-- Next.js Route Handlers (`apps/web/app/api/`) proxy requests to the `apps/server` (Elysia API).
-- **Never** import `@spectracker/db` inside `apps/web`. The database belongs to the Elysia server.
+- **Logic Separation**: All business logic, database queries, and data transformations MUST reside in `apps/server`.
+- **API Masking**: Route Handlers in `apps/web/app/api/` should be simple proxies that forward requests to the Elysia server and return the response.
+- **No Direct DB**: Never import `@spectracker/db` or `drizzle-orm` inside `apps/web`. The database is exclusive to the Elysia server.
+- **Environment**: Use `process.env.API_URL` to point to the backend server.
 
 ### 2. shadcn/ui Components
 
@@ -64,30 +65,33 @@ Browser/Next.js → Next.js Route Handler (app/api/) → apps/server (Elysia API
 
 ### 3. Page Structure
 
-Pages use **folder-based routing**. Each route is a folder with `index.vue`:
+Pages use **folder-based routing**. Each route is a folder with `page.tsx`:
 
 ```
-pages/
-├── index.vue              # /
-├── build/
-│   ├── index.vue          # /build
-│   └── [id].vue           # /build/:id
-└── components/
-    ├── index.vue           # /components
-    └── [category]/
-        ├── index.vue       # /components/:category
-        └── [id].vue        # /components/:category/:id
+app/
+├── (routes)/
+│   ├── page.tsx              # /
+│   ├── build/
+│   │   ├── page.tsx          # /build
+│   │   └── [id]/
+│   │       └── page.tsx      # /build/:id
+│   └── components/
+│       ├── page.tsx          # /components
+│       └── [category]/
+│           ├── page.tsx      # /components/:category
+│           └── [id]/
+│               └── page.tsx  # /components/:category/:id
 ```
 
-Do NOT create flat page files like `pages/build.vue`. Always use the folder pattern.
+Do NOT create flat page files like `app/build.tsx`. Always use the folder pattern with `page.tsx`.
 
 ### 4. Styling
 
 - Use **Tailwind CSS v4** utility classes. The theme is defined in `app/assets/css/main.css` using CSS variables.
 - Primary color is **emerald** (oklch-based).
-- Dark mode uses the `.dark` class (handled by `@nuxtjs/color-mode`).
-- For color mode dependent rendering, wrap in `<ClientOnly>` to avoid SSR hydration mismatches.
-- Font: **Inter** (loaded via Google Fonts in `app.vue`).
+- Dark mode uses the `.dark` class (handled by `next-themes`).
+- For color mode dependent rendering, wrap in `<ClientOnly>` (or use `mounted` state) to avoid SSR hydration mismatches.
+- Font: **Inter** (loaded via Google Fonts in `layout.tsx`).
 - Monospace: **JetBrains Mono** (for prices, specs, code).
 
 ### 5. Database (Drizzle + Cloudflare D1)
@@ -101,8 +105,8 @@ Do NOT create flat page files like `pages/build.vue`. Always use the folder patt
 ### 6. Env Variables
 
 - **Server env** (`packages/env/src/server.ts`): validated with Zod via `@t3-oss/env-core`. Used by `apps/server` and `packages/db`.
-- **Web env**: Nuxt uses Cloudflare D1 bindings configured in `wrangler.toml` (`DB`). No public env vars needed.
-- Env files: `apps/server/.env` (Elysia), `apps/web/.env` (Nuxt).
+- **Web env**: Vinext uses environment variables or Cloudflare bindings. No public env vars needed.
+- Env files: `apps/server/.env` (Elysia), `apps/web/.env` (Vinext).
 
 ### 7. Code Style
 
@@ -111,14 +115,14 @@ Do NOT create flat page files like `pages/build.vue`. Always use the folder patt
 - **Double quotes** for strings.
 - Formatting enforced by **oxfmt**, linting by **oxlint**.
 - Run `pnpm run check` to lint + format.
-- Vue components use `<script setup lang="ts">`.
+- React components use `.tsx` extension.
 - Import sorting: types first (`import type { ... }`), then packages, then local.
 
 ## Common Commands
 
 ```bash
 pnpm run dev          # Start all apps (turbo)
-pnpm run dev:web      # Start only the Nuxt web app
+pnpm run dev:web      # Start only the Vinext web app
 pnpm run dev:server   # Start only the Elysia server
 pnpm run build        # Build all
 pnpm run check        # oxlint + oxfmt
@@ -129,19 +133,19 @@ pnpm run db:migrate   # Run migrations
 pnpm run db:local     # Start local SQLite
 ```
 
-## Adding shadcn-vue Components
+## Adding shadcn Components
 
 ```bash
 cd apps/web
-npx shadcn-vue@latest add button card dialog table
+npx shadcn@latest add <component>
 ```
 
 ## Ports
 
-| App        | Port |
-| ---------- | ---- |
-| Nuxt (web) | 5173 |
-| Elysia     | 3000 |
+| App    | Port |
+| ------ | ---- |
+| Vinext | 3000 |
+| Elysia | 8787 |
 
 ## Domain Context
 

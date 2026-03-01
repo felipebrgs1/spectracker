@@ -3,19 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 
-interface GpuCatalogItem {
-	id: string;
-	name: string;
-	url: string;
-	imageUrl: string | null;
-	specs: Record<string, string>;
-	updatedAt: string;
-}
-
-interface GpuCatalogResponse {
-	items: GpuCatalogItem[];
-	total: number;
-}
+import { type GpuCatalogItem, type GpuCatalogResponse } from "@spectracker/contracts";
 
 async function getGpuSpecs(search?: string) {
 	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

@@ -32,3 +32,33 @@ export type CategoryItem = z.infer<typeof categoryItemSchema>;
 export type CategoriesResponse = z.infer<typeof categoriesResponseSchema>;
 export type ComponentItem = z.infer<typeof componentItemSchema>;
 export type ComponentsResponse = z.infer<typeof componentsResponseSchema>;
+
+export const gpuCatalogItemSchema = z.object({
+	id: z.string(),
+	name: z.string(),
+	url: z.string(),
+	imageUrl: z.string().nullable(),
+	specs: z.record(z.string(), z.string()),
+	updatedAt: z.string(),
+});
+
+export const gpuCatalogResponseSchema = z.object({
+	items: z.array(gpuCatalogItemSchema),
+	total: z.number().int().nonnegative(),
+});
+
+export type GpuCatalogItem = z.infer<typeof gpuCatalogItemSchema>;
+export type GpuCatalogResponse = z.infer<typeof gpuCatalogResponseSchema>;
+
+export const dashboardStatsSchema = z.object({
+	components: z.number().int().nonnegative(),
+	builds: z.number().int().nonnegative(),
+	categories: z.number().int().nonnegative(),
+});
+
+export const dashboardOverviewSchema = z.object({
+	stats: dashboardStatsSchema,
+});
+
+export type DashboardStats = z.infer<typeof dashboardStatsSchema>;
+export type DashboardOverview = z.infer<typeof dashboardOverviewSchema>;

@@ -6,119 +6,92 @@ SpecTracker is a PCPartPicker-style web app for building PC configurations with 
 
 ## Tech Stack
 
-| Layer         | Technology                                              |
-| ------------- | ------------------------------------------------------- |
-| Framework     | **Nuxt 4** (SSR, file-based routing, server routes)     |
-| UI Components | **shadcn-vue** (new-york style, installed via CLI)      |
-| Styling       | **Tailwind CSS v4** (via `@tailwindcss/vite` plugin)    |
-| Icons         | **lucide-vue-next**                                     |
-| Dark Mode     | **@nuxtjs/color-mode** (class-based, `classSuffix: ""`) |
-| API Pattern   | **Nuxt Server Routes** (API is hidden, never exposed)   |
-| ORM           | **Drizzle ORM** (`drizzle-orm` + `drizzle-kit`)         |
-| Database      | **Cloudflare D1** (SQLite) via `drizzle-orm/d1`         |
-| Validation    | **Zod v4**                                              |
-| Server (ext)  | **Elysia** + **oRPC** (standalone API, optional/public) |
-| Monorepo      | **Turborepo** + **pnpm workspaces**                     |
-| Runtime       | **Bun** (server app) / **Node** (Nuxt)                  |
-| Linting       | **oxlint** + **oxfmt** (not ESLint/Prettier)            |
-| Git Hooks     | None                                                    |
+| Layer         | Technology                                           |
+| ------------- | ---------------------------------------------------- |
+| Framework     | **Vinext** (React-based, RSC, Vite-powered)          |
+| UI Components | **shadcn/ui** (React version, installed via CLI)     |
+| Styling       | **Tailwind CSS v4** (via `@tailwindcss/vite` plugin) |
+| Icons         | **lucide-react**                                     |
+| Dark Mode     | **next-themes** (class-based)                        |
+| API Pattern   | **API Masking** (Next-style Route Handlers as Proxy) |
+| ORM           | **Drizzle ORM** (`drizzle-orm` + `drizzle-kit`)      |
+| Database      | **Cloudflare D1** (SQLite) via `drizzle-orm/d1`      |
+| Validation    | **Zod v4**                                           |
+| Server (ext)  | **Elysia** + **oRPC** (Standalone API on Workers)    |
+| Monorepo      | **Turborepo** + **pnpm workspaces**                  |
+| Runtime       | **Bun** (Monorepo/Scripts) / **Cloudflare Workers**  |
+| Linting       | **oxlint** + **oxfmt**                               |
 
 ## Architecture
 
 ```
 spectracker/
 ├── apps/
-│   ├── web/              # Nuxt 4 frontend (main app)
-│   │   ├── app/
-│   │   │   ├── assets/css/main.css  # Tailwind + shadcn theme
+│   ├── web/              # Next.js frontend (main app)
+│   │   ├── app/          # App Router
+│   │   │   ├── (routes)/ # Folders for routes
+│   │   │   ├── api/      # Route Handlers (BFF)
 │   │   │   ├── components/
-│   │   │   │   └── ui/              # shadcn-vue components (DO NOT edit manually)
-│   │   │   ├── composables/         # Vue composables
-│   │   │   ├── layouts/
-│   │   │   │   └── default.vue      # Main layout (header, nav, content)
-│   │   │   ├── lib/
-│   │   │   │   └── utils.ts         # cn() helper for class merging
-│   │   │   └── pages/               # File-based routing (folder structure)
-│   │   │       ├── index.vue        # /
-│   │   │       ├── build/
-│   │   │       │   └── index.vue    # /build
-│   │   │       └── components/
-│   │   │           └── index.vue    # /components
-│   │   ├── server/                  # Nuxt server routes (HIDDEN API)
-│   │   │   └── api/                 # /api/* routes
-│   │   ├── components.json          # shadcn-vue config
-│   │   └── nuxt.config.ts
-│   ├── server/            # Elysia standalone API (public/external)
-│   └── fumadocs/          # Documentation site
-├── packages/
-│   ├── api/               # oRPC routers + procedures (shared logic)
-│   ├── db/                # Drizzle ORM schemas + migrations
-│   ├── env/               # Env validation (Zod)
-│   └── config/            # Shared TS config (tsconfig.base.json)
+│   │   │   │   └── ui/   # shadcn/ui components (React)
+│   │   │   ├── globals.css # Tailwind + shadcn theme
+│   │   │   ├── layout.tsx  # Root Layout
+│   │   │   └── page.tsx    # Home Page
+│   │   ├── lib/
+│   │   │   └── utils.ts    # cn() helper
+│   │   ├── components.json # shadcn config
+│   │   └── next.config.ts
 ```
 
 ## Critical Rules
 
-### 1. API Consumption & Separation of Concerns
+### 1. API Consumption & API Masking
 
-The frontend (`apps/web`) MUST consume the backend API (`apps/server`) for all data operations. The Nuxt application **never** connects to the database directly and **must not** use Drizzle ORM.
+The frontend (`apps/web`) MUST consume the backend API (`apps/server`) for ALL data operations. The frontend acts ONLY as a proxy (**API Masking**).
 
 ```
-Browser/Nuxt → Nuxt Server Route → apps/server (Elysia API) → @spectracker/db → Cloudflare D1
+Browser/React → Vinext Route Handler (app/api/) → apps/server (Elysia API) → @spectracker/db
 ```
 
-- Pages and components use `$fetch('/api/...')` or `useFetch('/api/...')` to hit Nuxt Server Routes.
-- Nuxt Server Routes (`apps/web/server/api/`) then **proxy** or fetch these requests to the `apps/server` (Elysia API).
-- Nuxt Server Routes act as a BFF (Backend for Frontend) ONLY. They hide the real Elysia API URL from the browser.
-- **Never** import `@spectracker/db`, `drizzle-orm`, or use any database utilities inside `apps/web`.
-- The `apps/server` is the central API and the ONLY application that possesses database bindings and interacts with the database.
+- **Logic Separation**: All business logic, database queries, and data transformations MUST reside in `apps/server`.
+- **API Masking**: Route Handlers in `apps/web/app/api/` should be simple proxies that forward requests to the Elysia server and return the response.
+- **No Direct DB**: Never import `@spectracker/db` or `drizzle-orm` inside `apps/web`. The database is exclusive to the Elysia server.
+- **Environment**: Use `process.env.API_URL` to point to the backend server.
 
-Example Nuxt server route (Proxy):
-
-```ts
-// apps/web/server/api/components/index.get.ts
-export default defineEventHandler(async (event) => {
-	const config = useRuntimeConfig(event);
-	return $fetch(`${config.apiUrl}/catalog/components`);
-});
-```
-
-### 2. shadcn-vue Components
+### 2. shadcn/ui Components
 
 - Components live in `apps/web/app/components/ui/`.
-- **Always use the CLI** to add new components: `npx shadcn-vue@latest add <component>` (run from `apps/web/`).
-- **Never** write shadcn components manually.
-- shadcn config is in `apps/web/components.json` (style: new-york, base color: zinc).
-- Import path alias: `@/components/ui/<component>` or `~/components/ui/<component>`.
-- The `cn()` utility is at `@/lib/utils`.
-- **Pure Usage**: Use shadcn components in their pure form. Change their format/layout with custom classes only in specific cases. Prefer using built-in **variants** (e.g., `variant="outline"`) over ad-hoc utility classes.
+- **Always use the CLI**: `npx shadcn@latest add <component>` (run from `apps/web/`).
+- Import path alias: `@/components/ui/<component>`.
 
 ### 3. Page Structure
 
-Pages use **folder-based routing**. Each route is a folder with `index.vue`:
+Pages use **folder-based routing**. Each route is a folder with `page.tsx`:
 
 ```
-pages/
-├── index.vue              # /
-├── build/
-│   ├── index.vue          # /build
-│   └── [id].vue           # /build/:id
-└── components/
-    ├── index.vue           # /components
-    └── [category]/
-        ├── index.vue       # /components/:category
-        └── [id].vue        # /components/:category/:id
+app/
+├── (routes)/
+│   ├── page.tsx              # /
+│   ├── build/
+│   │   ├── page.tsx          # /build
+│   │   └── [id]/
+│   │       └── page.tsx      # /build/:id
+│   └── components/
+│       ├── page.tsx          # /components
+│       └── [category]/
+│           ├── page.tsx      # /components/:category
+│           └── [id]/
+│               └── page.tsx  # /components/:category/:id
 ```
 
-Do NOT create flat page files like `pages/build.vue`. Always use the folder pattern.
+Do NOT create flat page files like `app/build.tsx`. Always use the folder pattern with `page.tsx`.
 
 ### 4. Styling
 
 - Use **Tailwind CSS v4** utility classes. The theme is defined in `app/assets/css/main.css` using CSS variables.
 - Primary color is **emerald** (oklch-based).
-- Dark mode uses the `.dark` class (handled by `@nuxtjs/color-mode`).
-- For color mode dependent rendering, wrap in `<ClientOnly>` to avoid SSR hydration mismatches.
-- Font: **Inter** (loaded via Google Fonts in `app.vue`).
+- Dark mode uses the `.dark` class (handled by `next-themes`).
+- For color mode dependent rendering, wrap in `<ClientOnly>` (or use `mounted` state) to avoid SSR hydration mismatches.
+- Font: **Inter** (loaded via Google Fonts in `layout.tsx`).
 - Monospace: **JetBrains Mono** (for prices, specs, code).
 
 ### 5. Database (Drizzle + Cloudflare D1)
@@ -132,32 +105,24 @@ Do NOT create flat page files like `pages/build.vue`. Always use the folder patt
 ### 6. Env Variables
 
 - **Server env** (`packages/env/src/server.ts`): validated with Zod via `@t3-oss/env-core`. Used by `apps/server` and `packages/db`.
-- **Web env**: Nuxt uses Cloudflare D1 bindings configured in `wrangler.toml` (`DB`). No public env vars needed.
-- Env files: `apps/server/.env` (Elysia), `apps/web/.env` (Nuxt).
+- **Web env**: Vinext uses environment variables or Cloudflare bindings. No public env vars needed.
+- Env files: `apps/server/.env` (Elysia), `apps/web/.env` (Vinext).
 
-### 7. Contracts, Types, and Validation
-
-- All shared request/response and DTO typing must be centralized in `packages/contracts`.
-- `packages/contracts` is the single source of truth for runtime validation via **Zod** and inferred TypeScript types.
-- Do not create local `type` or `interface` declarations for API payloads inside `apps/*` or `packages/*` feature files.
-- Consumers (web pages, server routes, API modules) must import types from `@spectracker/contracts` and use `z.infer`-based exported types.
-- Server route responses should be validated with the corresponding schema from `@spectracker/contracts` before returning.
-
-### 8. Code Style
+### 7. Code Style
 
 - **Tabs** for indentation (not spaces).
 - **Semicolons** required.
 - **Double quotes** for strings.
 - Formatting enforced by **oxfmt**, linting by **oxlint**.
 - Run `pnpm run check` to lint + format.
-- Vue components use `<script setup lang="ts">`.
+- React components use `.tsx` extension.
 - Import sorting: types first (`import type { ... }`), then packages, then local.
 
 ## Common Commands
 
 ```bash
 pnpm run dev          # Start all apps (turbo)
-pnpm run dev:web      # Start only the Nuxt web app
+pnpm run dev:web      # Start only the Vinext web app
 pnpm run dev:server   # Start only the Elysia server
 pnpm run build        # Build all
 pnpm run check        # oxlint + oxfmt
@@ -168,19 +133,19 @@ pnpm run db:migrate   # Run migrations
 pnpm run db:local     # Start local SQLite
 ```
 
-## Adding shadcn-vue Components
+## Adding shadcn Components
 
 ```bash
 cd apps/web
-npx shadcn-vue@latest add button card dialog table
+npx shadcn@latest add <component>
 ```
 
 ## Ports
 
-| App        | Port |
-| ---------- | ---- |
-| Nuxt (web) | 5173 |
-| Elysia     | 3000 |
+| App    | Port |
+| ------ | ---- |
+| Vinext | 3000 |
+| Elysia | 8787 |
 
 ## Domain Context
 

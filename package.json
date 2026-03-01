@@ -22,10 +22,10 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "turbo dev --filter=web",
+    "dev": "turbo dev",
     "build": "turbo build",
-    "start": "turbo start --filter=web",
-    "preview": "pnpm build && turbo preview --filter=web",
+    "start": "turbo start",
+    "preview": "pnpm build && turbo preview",
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",
     "dev:web": "turbo -F web dev",
