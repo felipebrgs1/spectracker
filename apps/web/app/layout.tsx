@@ -6,8 +6,6 @@ import { Cpu } from "lucide-react";
 import Link from "next/link";
 import "@/globals.css";
 
-
-
 export const metadata: Metadata = {
 	title: {
 		template: "%s - SpecTracker",
