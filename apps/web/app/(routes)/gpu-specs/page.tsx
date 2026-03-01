@@ -1,6 +1,4 @@
 import { Search, Cpu, Gauge, MemoryStick, CalendarDays } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Image from "next/image";
