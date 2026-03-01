@@ -1,3 +1,0 @@
-[files]
-includes = ["**/*.{ts,tsx,js,jsx}"]
-excludes = ["node_modules/**", "apps/web/app/components/ui/**"]
