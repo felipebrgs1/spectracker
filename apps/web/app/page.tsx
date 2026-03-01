@@ -111,7 +111,7 @@ export default async function Home() {
 	return (
 		<div className="space-y-8">
 			{/* Hero section */}
-			<div className="relative overflow-hidden rounded-2xl border bg-linear-to-brrom-primary/5 via-background to-primary/10 p-8 md:p-12">
+			<div className="relative overflow-hidden rounded-2xl border bg-linear-to-br from-primary/5 via-background to-primary/10 p-8 md:p-12">
 				<div className="absolute -right-20 -top-20 size-64 rounded-full bg-primary/10 blur-3xl" />
 				<div className="absolute -bottom-20 -left-20 size-64 rounded-full bg-primary/5 blur-3xl" />
 				<div className="relative">

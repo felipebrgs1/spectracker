@@ -5,7 +5,7 @@ import { Nav } from "@/components/nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Cpu } from "lucide-react";
 import Link from "next/link";
-import "./globals.css";
+import "@/globals.css";
 
 const inter = Inter({
 	subsets: ["latin"],
