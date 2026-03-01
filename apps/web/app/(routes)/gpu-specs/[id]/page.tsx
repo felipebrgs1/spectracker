@@ -13,35 +13,27 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 
-interface GpuDetail {
-	id: string;
-	name: string;
-	url: string;
-	imageUrl: string | null;
-	specs: Record<string, string>;
-	updatedAt: string;
-}
+import { type GpuCatalogItem } from "@spectracker/contracts";
 
-async function getGpuDetail(id: string) {
-	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-	const res = await fetch(`${baseUrl}/api/gpu-specs/${id}`, {
-		cache: "no-store",
-	});
+import { api } from "@/lib/api";
 
-	if (!res.ok) {
-		if (res.status === 404) return null;
+async function getGpuDetail(id: string): Promise<GpuCatalogItem | null> {
+	try {
+		return await api<GpuCatalogItem>(`/gpu-specs/${id}`);
+	} catch (error: any) {
+		if (error.status === 404) return null;
+		console.error("Failed to fetch GPU detail:", error);
 		throw new Error("Failed to fetch GPU detail");
 	}
-
-	return await res.json();
 }
 
 export default async function GpuDetailPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = await params;
-	const data: GpuDetail | null = await getGpuDetail(id);
+	const data = await getGpuDetail(id);
 
 	if (!data) {
 		notFound();
+		return null;
 	}
 
 	const specs = data.specs || {};

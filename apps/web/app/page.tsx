@@ -11,20 +11,13 @@ import {
 	ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
+import { type DashboardOverview, type CategoriesResponse } from "@spectracker/contracts";
 
-interface DashboardOverview {
-	stats: {
-		components: number;
-		builds: number;
-		categories: number;
-	};
-}
+import { api } from "@/lib/api";
 
-interface Category {
-	name: string;
-	slug: string;
-	componentCount: number;
-}
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 
 const iconBySlug = {
 	cpu: Cpu,
@@ -49,20 +42,20 @@ const colorBySlug = {
 } as const;
 
 async function getDashboardData() {
-	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-	const overviewRes = await fetch(`${baseUrl}/api/dashboard/overview`, {
-		cache: "no-store",
-	});
-	const categoriesRes = await fetch(`${baseUrl}/api/categories`, {
-		next: { revalidate: 3600 },
-	});
+	try {
+		const [overview, categoriesResponse] = await Promise.all([
+			api<DashboardOverview>("/dashboard/overview"),
+			api<CategoriesResponse>("/catalog/categories"),
+		]);
 
-	const overview: DashboardOverview = await overviewRes.json().catch(() => ({
-		stats: { components: 0, builds: 0, categories: 0 },
-	}));
-	const categoriesResponse: Category[] = await categoriesRes.json().catch(() => []);
-
-	return { overview, categoriesResponse };
+		return { overview, categoriesResponse };
+	} catch (error) {
+		console.error("Failed to fetch dashboard data:", error);
+		return {
+			overview: { stats: { components: 0, builds: 0, categories: 0 } },
+			categoriesResponse: [],
+		};
+	}
 }
 
 export default async function Home() {

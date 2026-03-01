@@ -1,36 +1,44 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import { Cpu } from "lucide-react";
 import Link from "next/link";
+import { api } from "@/lib/api";
 import { formatPrice } from "@/lib/utils";
+import { type ComponentsResponse } from "@spectracker/contracts";
 
-interface ComponentItem {
-	id: string;
-	name: string;
-	category: string;
-	price: number;
-	store?: string;
-	inStock?: boolean;
-}
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface ComponentsResponse {
-	items: ComponentItem[];
-	total: number;
-}
-
-async function getComponents() {
-	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-	const res = await fetch(`${baseUrl}/api/components`, {
-		cache: "no-store",
+export default function ComponentsPage() {
+	const { data, isLoading, error } = useQuery<ComponentsResponse>({
+		queryKey: ["components"],
+		queryFn: () => api("/catalog/components"),
 	});
 
-	if (!res.ok) {
-		return { items: [], total: 0 };
+	if (isLoading) {
+		return (
+			<div className="space-y-6">
+				<div>
+					<h1 className="text-2xl font-bold tracking-tight">Components</h1>
+					<p className="text-muted-foreground">Browse all PC components in the database.</p>
+				</div>
+				<div className="grid gap-3">
+					{[...Array(5)].map((_, i) => (
+						<Skeleton key={i} className="h-20 w-full rounded-lg" />
+					))}
+				</div>
+			</div>
+		);
 	}
 
-	return await res.json();
-}
-
-export default async function ComponentsPage() {
-	const data: ComponentsResponse = await getComponents();
+	if (error || !data) {
+		return (
+			<div className="p-8 text-center">
+				<p className="text-destructive">Failed to load components. Please try again later.</p>
+			</div>
+		);
+	}
 
 	return (
 		<div className="space-y-6">

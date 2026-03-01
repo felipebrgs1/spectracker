@@ -5,21 +5,20 @@ import Image from "next/image";
 
 import { type GpuCatalogItem, type GpuCatalogResponse } from "@spectracker/contracts";
 
+import { api } from "@/lib/api";
+
 async function getGpuSpecs(search?: string) {
-	const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-	const url = new URL(`${baseUrl}/api/gpu-specs`);
-	if (search) url.searchParams.set("search", search);
-	url.searchParams.set("limit", "50");
-
-	const res = await fetch(url.toString(), {
-		cache: "no-store",
-	});
-
-	if (!res.ok) {
+	try {
+		return await api<GpuCatalogResponse>("/gpu-specs", {
+			query: {
+				search,
+				limit: "50",
+			},
+		});
+	} catch (error) {
+		console.error("Failed to fetch GPU specs:", error);
 		return { items: [], total: 0 };
 	}
-
-	return await res.json();
 }
 
 function spec(item: GpuCatalogItem, key: string): string {

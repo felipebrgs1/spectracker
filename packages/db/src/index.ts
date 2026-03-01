@@ -25,4 +25,6 @@ export function createDb({ url, authToken }: DbCredentials) {
 export function createD1Db(client: D1DatabaseLike) {
 	return drizzleD1(client as any, { schema });
 }
+
+export type AppDatabase = ReturnType<typeof createD1Db>;
 export * from "./schema/index";

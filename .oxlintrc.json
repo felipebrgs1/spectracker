@@ -6,9 +6,14 @@
 		"react-perf"
 	],
 	"categories": {
-		"correctness": "warn"
+		"correctness": "warn",
+		"perf": "warn",
+		"pedantic": "warn"
 	},
-	"rules": {},
+	"rules": {
+		"max-lines-per-function": "off",
+		"max-lines": "off"
+	},
 	"settings": {
 		"jsdoc": {
 			"ignorePrivate": false,

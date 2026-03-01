@@ -6,21 +6,23 @@ SpecTracker is a PCPartPicker-style web app for building PC configurations with 
 
 ## Tech Stack
 
-| Layer         | Technology                                           |
-| ------------- | ---------------------------------------------------- |
-| Framework     | **Vinext** (React-based, RSC, Vite-powered)          |
-| UI Components | **shadcn/ui** (React version, installed via CLI)     |
-| Styling       | **Tailwind CSS v4** (via `@tailwindcss/vite` plugin) |
-| Icons         | **lucide-react**                                     |
-| Dark Mode     | **next-themes** (class-based)                        |
-| API Pattern   | **API Masking** (Next-style Route Handlers as Proxy) |
-| ORM           | **Drizzle ORM** (`drizzle-orm` + `drizzle-kit`)      |
-| Database      | **Cloudflare D1** (SQLite) via `drizzle-orm/d1`      |
-| Validation    | **Zod v4**                                           |
-| Server (ext)  | **Elysia** + **oRPC** (Standalone API on Workers)    |
-| Monorepo      | **Turborepo** + **pnpm workspaces**                  |
-| Runtime       | **Bun** (Monorepo/Scripts) / **Cloudflare Workers**  |
-| Linting       | **oxlint** + **oxfmt**                               |
+| Layer          | Technology                                           |
+| -------------- | ---------------------------------------------------- |
+| Framework      | **Vinext** (React-based, RSC, Vite-powered)          |
+| UI Components  | **shadcn/ui** (React version, installed via CLI)     |
+| Styling        | **Tailwind CSS v4** (via `@tailwindcss/vite` plugin) |
+| Icons          | **lucide-react**                                     |
+| Dark Mode      | **next-themes** (class-based)                        |
+| API Pattern    | **API Masking** (Next-style Route Handlers as Proxy) |
+| Request Client | **ofetch** (Auto-JSON, better defaults)              |
+| State Mgmt     | **TanStack Query v5** (Server state management)      |
+| ORM            | **Drizzle ORM** (`drizzle-orm` + `drizzle-kit`)      |
+| Database       | **Cloudflare D1** (SQLite) via `drizzle-orm/d1`      |
+| Validation     | **Zod v4**                                           |
+| Server (ext)   | **Elysia** + **oRPC** (Standalone API on Workers)    |
+| Monorepo       | **Turborepo** + **pnpm workspaces**                  |
+| Runtime        | **Bun** (Monorepo/Scripts) / **Cloudflare Workers**  |
+| Linting        | **oxlint** + **oxfmt**                               |
 
 ## Architecture
 
@@ -28,18 +30,14 @@ SpecTracker is a PCPartPicker-style web app for building PC configurations with 
 spectracker/
 ├── apps/
 │   ├── web/              # Next.js frontend (main app)
-│   │   ├── app/          # App Router
-│   │   │   ├── (routes)/ # Folders for routes
-│   │   │   ├── api/      # Route Handlers (BFF)
-│   │   │   ├── components/
-│   │   │   │   └── ui/   # shadcn/ui components (React)
-│   │   │   ├── globals.css # Tailwind + shadcn theme
-│   │   │   ├── layout.tsx  # Root Layout
-│   │   │   └── page.tsx    # Home Page
-│   │   ├── lib/
-│   │   │   └── utils.ts    # cn() helper
-│   │   ├── components.json # shadcn config
-│   │   └── next.config.ts
+│   │   ├── ...
+│   ├── server/           # Elysia API (MVC Architecture)
+│   │   ├── src/
+│   │   │   ├── controllers/  # Route handlers & logic coordination
+│   │   │   ├── services/     # Business logic & DB operations
+│   │   │   ├── routes/       # Elysia route definitions
+│   │   │   ├── models/       # (Optional) Domain models if needed
+│   │   │   └── index.ts      # Server entry point
 ```
 
 ## Critical Rules
@@ -49,10 +47,11 @@ spectracker/
 The frontend (`apps/web`) MUST consume the backend API (`apps/server`) for ALL data operations. The frontend acts ONLY as a proxy (**API Masking**).
 
 ```
-Browser/React → Vinext Route Handler (app/api/) → apps/server (Elysia API) → @spectracker/db
+Browser/React → Vinext Route Handler (app/api/) → apps/server (Elysia API - MVC) → @spectracker/db
 ```
 
 - **Logic Separation**: All business logic, database queries, and data transformations MUST reside in `apps/server`.
+- **MVC Pattern**: `apps/server` must follow the Model-View-Controller pattern (Services for DB/Logic, Controllers for request handling).
 - **API Masking**: Route Handlers in `apps/web/app/api/` should be simple proxies that forward requests to the Elysia server and return the response.
 - **No Direct DB**: Never import `@spectracker/db` or `drizzle-orm` inside `apps/web`. The database is exclusive to the Elysia server.
 - **Environment**: Use `process.env.API_URL` to point to the backend server.
