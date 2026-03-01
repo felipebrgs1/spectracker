@@ -6,92 +6,61 @@ SpecTracker is a PCPartPicker-style web app for building PC configurations with 
 
 ## Tech Stack
 
-| Layer         | Technology                                              |
-| ------------- | ------------------------------------------------------- |
-| Framework     | **Nuxt 4** (SSR, file-based routing, server routes)     |
-| UI Components | **shadcn-vue** (new-york style, installed via CLI)      |
-| Styling       | **Tailwind CSS v4** (via `@tailwindcss/vite` plugin)    |
-| Icons         | **lucide-vue-next**                                     |
-| Dark Mode     | **@nuxtjs/color-mode** (class-based, `classSuffix: ""`) |
-| API Pattern   | **Nuxt Server Routes** (API is hidden, never exposed)   |
-| ORM           | **Drizzle ORM** (`drizzle-orm` + `drizzle-kit`)         |
-| Database      | **Cloudflare D1** (SQLite) via `drizzle-orm/d1`         |
-| Validation    | **Zod v4**                                              |
-| Server (ext)  | **Elysia** + **oRPC** (standalone API, optional/public) |
-| Monorepo      | **Turborepo** + **pnpm workspaces**                     |
-| Runtime       | **Bun** (server app) / **Node** (Nuxt)                  |
-| Linting       | **oxlint** + **oxfmt** (not ESLint/Prettier)            |
-| Git Hooks     | None                                                    |
+| Layer         | Technology                                           |
+| ------------- | ---------------------------------------------------- |
+| Framework     | **Next.js 16+** (App Router, Server Components)      |
+| UI Components | **shadcn/ui** (React version, installed via CLI)     |
+| Styling       | **Tailwind CSS v4** (via `@tailwindcss/vite` plugin) |
+| Icons         | **lucide-react**                                     |
+| Dark Mode     | **next-themes** (class-based)                        |
+| API Pattern   | **Next.js Route Handlers** (BFF pattern)             |
+| ORM           | **Drizzle ORM** (`drizzle-orm` + `drizzle-kit`)      |
+| Database      | **Cloudflare D1** (SQLite) via `drizzle-orm/d1`      |
+| Validation    | **Zod v4**                                           |
+| Server (ext)  | **Elysia** + **oRPC** (standalone API)               |
+| Monorepo      | **Turborepo** + **pnpm workspaces**                  |
+| Runtime       | **Bun** (server app) / **Node** (Next.js)            |
+| Linting       | **oxlint** + **oxfmt**                               |
 
 ## Architecture
 
 ```
 spectracker/
 ├── apps/
-│   ├── web/              # Nuxt 4 frontend (main app)
-│   │   ├── app/
-│   │   │   ├── assets/css/main.css  # Tailwind + shadcn theme
+│   ├── web/              # Next.js frontend (main app)
+│   │   ├── app/          # App Router
+│   │   │   ├── (routes)/ # Folders for routes
+│   │   │   ├── api/      # Route Handlers (BFF)
 │   │   │   ├── components/
-│   │   │   │   └── ui/              # shadcn-vue components (DO NOT edit manually)
-│   │   │   ├── composables/         # Vue composables
-│   │   │   ├── layouts/
-│   │   │   │   └── default.vue      # Main layout (header, nav, content)
-│   │   │   ├── lib/
-│   │   │   │   └── utils.ts         # cn() helper for class merging
-│   │   │   └── pages/               # File-based routing (folder structure)
-│   │   │       ├── index.vue        # /
-│   │   │       ├── build/
-│   │   │       │   └── index.vue    # /build
-│   │   │       └── components/
-│   │   │           └── index.vue    # /components
-│   │   ├── server/                  # Nuxt server routes (HIDDEN API)
-│   │   │   └── api/                 # /api/* routes
-│   │   ├── components.json          # shadcn-vue config
-│   │   └── nuxt.config.ts
-│   ├── server/            # Elysia standalone API (public/external)
-│   └── fumadocs/          # Documentation site
-├── packages/
-│   ├── api/               # oRPC routers + procedures (shared logic)
-│   ├── db/                # Drizzle ORM schemas + migrations
-│   ├── env/               # Env validation (Zod)
-│   └── config/            # Shared TS config (tsconfig.base.json)
+│   │   │   │   └── ui/   # shadcn/ui components (React)
+│   │   │   ├── globals.css # Tailwind + shadcn theme
+│   │   │   ├── layout.tsx  # Root Layout
+│   │   │   └── page.tsx    # Home Page
+│   │   ├── lib/
+│   │   │   └── utils.ts    # cn() helper
+│   │   ├── components.json # shadcn config
+│   │   └── next.config.ts
 ```
 
 ## Critical Rules
 
 ### 1. API Consumption & Separation of Concerns
 
-The frontend (`apps/web`) MUST consume the backend API (`apps/server`) for all data operations. The Nuxt application **never** connects to the database directly and **must not** use Drizzle ORM.
+The frontend (`apps/web`) MUST consume the backend API (`apps/server`) for all data operations.
 
 ```
-Browser/Nuxt → Nuxt Server Route → apps/server (Elysia API) → @spectracker/db → Cloudflare D1
+Browser/Next.js → Next.js Route Handler (app/api/) → apps/server (Elysia API) → @spectracker/db
 ```
 
-- Pages and components use `$fetch('/api/...')` or `useFetch('/api/...')` to hit Nuxt Server Routes.
-- Nuxt Server Routes (`apps/web/server/api/`) then **proxy** or fetch these requests to the `apps/server` (Elysia API).
-- Nuxt Server Routes act as a BFF (Backend for Frontend) ONLY. They hide the real Elysia API URL from the browser.
-- **Never** import `@spectracker/db`, `drizzle-orm`, or use any database utilities inside `apps/web`.
-- The `apps/server` is the central API and the ONLY application that possesses database bindings and interacts with the database.
+- Pages and components use `fetch('/api/...')` from client or direct fetch from Server Components.
+- Next.js Route Handlers (`apps/web/app/api/`) proxy requests to the `apps/server` (Elysia API).
+- **Never** import `@spectracker/db` inside `apps/web`. The database belongs to the Elysia server.
 
-Example Nuxt server route (Proxy):
-
-```ts
-// apps/web/server/api/components/index.get.ts
-export default defineEventHandler(async (event) => {
-	const config = useRuntimeConfig(event);
-	return $fetch(`${config.apiUrl}/catalog/components`);
-});
-```
-
-### 2. shadcn-vue Components
+### 2. shadcn/ui Components
 
 - Components live in `apps/web/app/components/ui/`.
-- **Always use the CLI** to add new components: `npx shadcn-vue@latest add <component>` (run from `apps/web/`).
-- **Never** write shadcn components manually.
-- shadcn config is in `apps/web/components.json` (style: new-york, base color: zinc).
-- Import path alias: `@/components/ui/<component>` or `~/components/ui/<component>`.
-- The `cn()` utility is at `@/lib/utils`.
-- **Pure Usage**: Use shadcn components in their pure form. Change their format/layout with custom classes only in specific cases. Prefer using built-in **variants** (e.g., `variant="outline"`) over ad-hoc utility classes.
+- **Always use the CLI**: `npx shadcn@latest add <component>` (run from `apps/web/`).
+- Import path alias: `@/components/ui/<component>`.
 
 ### 3. Page Structure
 

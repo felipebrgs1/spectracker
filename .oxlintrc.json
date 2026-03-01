@@ -1,5 +1,10 @@
 {
-	"plugins": ["typescript", "vue"],
+	"plugins": [
+		"typescript",
+		"nextjs",
+		"react",
+		"react-perf"
+	],
 	"categories": {
 		"correctness": "warn"
 	},
@@ -22,5 +27,10 @@
 		"node": true
 	},
 	"globals": {},
-	"ignorePatterns": [".nuxt", ".output", "dist", "node_modules"]
+	"ignorePatterns": [
+		".next",
+		".output",
+		"dist",
+		"node_modules"
+	]
 }
