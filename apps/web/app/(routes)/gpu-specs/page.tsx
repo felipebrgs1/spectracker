@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 
 interface GpuCatalogItem {
 	id: string;
@@ -109,12 +110,7 @@ export default async function GpuSpecsPage({
 						<div className="flex gap-3">
 							<div className="size-24 shrink-0 overflow-hidden rounded-md border bg-muted/30">
 								{item.imageUrl ? (
-									<img
-										src={item.imageUrl}
-										alt={item.name}
-										className="size-full object-cover"
-										loading="lazy"
-									/>
+									<Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
 								) : (
 									<div className="flex size-full items-center justify-center">
 										<Cpu className="size-6 text-muted-foreground" />

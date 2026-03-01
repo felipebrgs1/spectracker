@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 
 interface GpuDetail {
 	id: string;
@@ -98,7 +99,7 @@ export default async function GpuDetailPage({ params }: { params: Promise<{ id: 
 					<CardContent className="p-3">
 						<div className="aspect-4/3verflow-hidden rounded-md border bg-muted/30">
 							{data.imageUrl ? (
-								<img src={data.imageUrl} alt={data.name} className="size-full object-cover" />
+								<Image src={data.imageUrl} alt={data.name} fill className="object-cover" />
 							) : (
 								<div className="flex size-full items-center justify-center">
 									<Cpu className="size-8 text-muted-foreground" />
